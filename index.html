@@ -1,0 +1,1754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#16110E">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Ear Trainer</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='10' fill='%2316110E'/%3E%3Cg fill='%23E8A33D'%3E%3Crect x='12' y='12' width='12' height='12' rx='2'/%3E%3Crect x='28' y='12' width='12' height='12' rx='2'/%3E%3Crect x='44' y='12' width='8' height='12' rx='2'/%3E%3Crect x='12' y='28' width='12' height='12' rx='2'/%3E%3Crect x='28' y='28' width='12' height='12' rx='2'/%3E%3Crect x='44' y='28' width='8' height='12' rx='2'/%3E%3Crect x='12' y='44' width='12' height='8' rx='2'/%3E%3Crect x='28' y='44' width='12' height='8' rx='2'/%3E%3Crect x='44' y='44' width='8' height='8' rx='2'/%3E%3C/g%3E%3C/svg%3E">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;600&display=swap');
+:root{
+  --bg:#16110E; --surface:#211913; --surface-2:#2C221A; --ink:#EDE0D0;
+  --muted:#9A8874; --amber:#E8A33D; --ember:#D4826B; --moss:#7E9B5C;
+  --line:rgba(237,224,208,0.10);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  background:var(--bg); color:var(--ink); min-height:100vh;
+  font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  -webkit-font-smoothing:antialiased; transition:filter .4s ease;
+  padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+body.dim{filter:brightness(0.5) saturate(0.85)}
+.page{max-width:520px;margin:0 auto;padding:40px 20px 72px}
+.eyebrow{font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--amber);margin-bottom:14px;font-weight:600}
+.title{font-family:Oswald,"Arial Narrow",Impact,sans-serif;font-weight:600;font-size:38px;line-height:1.03;letter-spacing:-.01em;margin:0 0 14px;text-transform:uppercase}
+.sub{color:var(--muted);font-size:15px;line-height:1.5;margin:0 0 26px}
+.note{color:var(--muted);font-size:13px;line-height:1.55;margin:22px 0 0}
+.suggest{display:block;width:100%;text-align:left;cursor:pointer;background:linear-gradient(160deg,#33261A 0%,var(--surface) 70%);border:1px solid rgba(232,163,61,.34);border-radius:9px;padding:20px 20px 22px;margin-bottom:34px;color:var(--ink);font:inherit;box-shadow:0 0 40px -14px rgba(232,163,61,.42)}
+.suggest:active{transform:translateY(1px)}
+.suggest-label{display:block;font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--amber);margin-bottom:10px;font-weight:600}
+.suggest-name{display:block;font-family:Oswald,"Arial Narrow",sans-serif;font-size:24px;text-transform:uppercase;margin-bottom:6px}
+.suggest-why{display:block;font-size:13px;color:var(--muted);font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+.group{margin-bottom:28px}
+.group-title{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:0 0 10px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+.row{display:flex;gap:8px;margin-bottom:8px}
+.row-main{flex:1;display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:7px;padding:15px 16px;color:var(--ink);font:inherit;cursor:pointer;text-align:left}
+.row-main:active{background:var(--surface-2)}
+.row-name{flex:1;font-size:15px}
+.row-num{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;color:var(--muted);min-width:38px;text-align:right}
+.row-study{background:none;border:1px solid var(--line);border-radius:7px;color:var(--muted);font:inherit;font-size:11px;letter-spacing:.1em;padding:0 14px;cursor:pointer}
+.bar{display:block;width:62px;height:3px;background:rgba(237,224,208,.10);border-radius:2px;overflow:hidden}
+.bar.sm{width:46px}
+.bar-fill{display:block;height:100%;background:var(--amber)}
+.foot{display:flex;gap:10px;margin-top:30px}
+.ghost{flex:1;background:none;border:1px solid var(--line);border-radius:7px;color:var(--muted);font:inherit;font-size:13px;padding:13px;cursor:pointer}
+.ghost.wide{width:100%;margin-top:10px}
+.primary{width:100%;background:var(--amber);border:none;border-radius:7px;color:#1A1208;font:inherit;font-weight:600;font-size:16px;padding:17px;cursor:pointer;margin-top:26px}
+.drill{min-height:100vh;max-width:520px;margin:0 auto;padding:16px 14px 22px;display:flex;flex-direction:column}
+.drill-top{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.drill-name{flex:1;text-align:center;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+.x{background:none;border:none;color:var(--muted);font:inherit;font-size:11px;letter-spacing:.14em;cursor:pointer;padding:6px 4px}
+.x.standalone{margin-bottom:18px;padding-left:0;display:block}
+.count{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;color:var(--amber);min-width:44px;text-align:right}
+.pline{height:2px;background:rgba(237,224,208,.08);margin-bottom:18px}
+.pline span{display:block;height:100%;background:var(--amber);transition:width .35s ease}
+.lamp{position:relative;width:100%;border:1px solid rgba(232,163,61,.22);background:var(--surface);border-radius:9px;padding:30px 16px;cursor:pointer;overflow:hidden;margin-bottom:14px}
+.lamp-glow{position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,rgba(232,163,61,.30),transparent 68%);opacity:0;transition:opacity .5s ease}
+.lamp.on .lamp-glow{opacity:1}
+.lamp-text{position:relative;font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:var(--amber);font-weight:600}
+.reveal{text-align:center;font-family:Oswald,"Arial Narrow",sans-serif;font-size:22px;color:var(--moss);margin-bottom:12px}
+.reveal.muted{color:var(--ember);font-size:13px;letter-spacing:.18em}
+.keys{flex:1;display:grid;gap:8px;align-content:stretch}
+.keys.cols-1{grid-template-columns:1fr}
+.keys.cols-2{grid-template-columns:repeat(2,1fr)}
+.keys.cols-3{grid-template-columns:repeat(3,1fr)}
+.key{background:var(--surface-2);border:1px solid var(--line);border-radius:7px;color:var(--ink);font-family:Oswald,"Arial Narrow",sans-serif;font-size:19px;min-height:62px;cursor:pointer;transition:background .12s ease,opacity .3s ease}
+.key:active,.key.hit{background:var(--amber);color:#1A1208}
+.key.dead{background:transparent;color:rgba(237,224,208,.16);border-color:rgba(237,224,208,.05);cursor:default}
+.skip{background:none;border:none;color:var(--muted);font:inherit;font-size:12px;letter-spacing:.12em;padding:16px;cursor:pointer}
+.done{text-align:center;padding-top:76px}
+.bignum{font-family:Oswald,"Arial Narrow",sans-serif;font-size:92px;line-height:1;color:var(--amber);margin:8px 0 16px}
+.bignum span{font-size:30px;color:var(--muted);margin-left:4px}
+.weak{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--line);font-size:14px}
+.weak-name{font-family:Oswald,"Arial Narrow",sans-serif;min-width:74px}
+.weak-deck{flex:1;font-size:11px;color:var(--muted)}
+.weak-num{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;color:var(--muted);min-width:34px;text-align:right}
+.weak-word{font-size:10px;color:var(--ember);min-width:74px;text-align:right}
+button:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){.lamp-glow,.pline span,body{transition:none}}
+@media (max-width:400px){.title{font-size:32px}.key{font-size:17px;min-height:56px}}
+.tier{font-style:normal;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:9px;color:var(--muted);margin-left:8px;opacity:.65}
+.modhead{width:100%;display:flex;justify-content:space-between;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:7px;color:var(--ink);font:inherit;font-size:15px;padding:16px;margin-bottom:8px;cursor:pointer;text-align:left}
+.modhead.open{border-color:rgba(232,163,61,.34);color:var(--amber)}
+.modhead span{font-family:ui-monospace,monospace;color:var(--muted)}
+.logrow{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line)}
+.logname{flex:1;font-size:14px;line-height:1.35}
+.chip{background:none;border:1px solid var(--line);border-radius:20px;color:var(--muted);font:inherit;font-size:10px;letter-spacing:.06em;padding:6px 11px;cursor:pointer;white-space:nowrap;min-width:96px}
+.chip.r1,.chip.r2{color:var(--ember);border-color:rgba(180,71,46,.4)}
+.chip.r3{color:var(--amber);border-color:rgba(232,163,61,.35)}
+.chip.r4,.chip.r5{color:var(--moss);border-color:rgba(126,155,92,.4)}
+.weak-deck2{flex:1;font-size:14px}
+.filelabel{position:relative;overflow:hidden;text-align:center;line-height:1.9;cursor:pointer}
+.filelabel input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.viz{margin:0 0 14px;padding:12px 10px;background:var(--surface);border:1px solid var(--line);border-radius:9px}
+.piano{width:100%;height:auto;display:block;max-height:120px}
+.wk{fill:#4A3F35;stroke:#16110E;stroke-width:1.5}
+.wk.act{fill:#8A7358}
+.wk.act.live{fill:var(--amber)}
+.bk{fill:#181310;stroke:#16110E;stroke-width:1}
+.bk.act{fill:#6E5A42}
+.bk.act.live{fill:var(--amber)}
+.wk,.bk{transition:fill .12s ease}
+.oct{fill:rgba(22,17,14,.55);font-size:9px;text-anchor:middle;font-family:ui-monospace,monospace}
+.ord{fill:#16110E;font-size:12px;font-weight:700;text-anchor:middle;font-family:ui-monospace,monospace}
+.ordb{fill:var(--ink);font-size:10px;font-weight:700;text-anchor:middle;font-family:ui-monospace,monospace}
+.strip{display:flex;gap:6px;justify-content:center}
+.strip.wrap{flex-wrap:wrap}
+.chip2{flex:1;min-width:44px;max-width:90px;text-align:center;padding:11px 4px;border-radius:7px;
+ background:var(--surface-2);border:1px solid var(--line);color:var(--muted);
+ font-family:Oswald,"Arial Narrow",sans-serif;font-size:15px;transition:all .12s ease}
+.strip.wrap .chip2{flex:0 0 calc(25% - 5px);font-size:13px;padding:9px 2px}
+.chip2.live{background:var(--amber);color:#1A1208;border-color:var(--amber)}
+.beats{padding:6px 2px}
+.brow{position:relative;height:26px}
+.dot{position:absolute;top:11px;width:5px;height:5px;border-radius:50%;background:#5C4C3C;
+ transform:translate(-50%,-50%);transition:all .1s ease}
+.dot.mid{width:7px;height:7px}
+.dot.big{width:10px;height:10px;background:#8A7358}
+.dot.live{background:var(--amber);box-shadow:0 0 10px rgba(232,163,61,.7)}
+.eqbands{display:flex;gap:4px;align-items:flex-end;height:56px}
+.eqb{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px}
+.eqb i{display:block;width:100%;height:20px;background:#3B3128;border-radius:2px;transition:all .15s ease}
+.eqb.act i{height:38px;background:#8A7358}
+.eqb.act.live i,.eqb.live i{background:var(--amber)}
+.eqb em{font-style:normal;font-size:9px;color:var(--muted);font-family:ui-monospace,monospace}
+.learnbtn{width:100%;background:none;border:1px dashed rgba(232,163,61,.4);border-radius:9px;
+ color:var(--amber);font:inherit;font-size:14px;padding:16px;margin:6px 0 12px;cursor:pointer}
+.itemgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin:0 0 16px}
+.itembtn{background:var(--surface-2);border:1px solid var(--line);border-radius:7px;color:var(--ink);
+ font:inherit;font-size:13px;padding:13px 8px;cursor:pointer;text-align:left}
+.itembtn:active{background:var(--amber);color:#1A1208}
+.roots{display:grid;grid-template-columns:repeat(6,1fr);gap:5px;margin:0 0 16px}
+.rchip{background:var(--surface);border:1px solid var(--line);border-radius:7px;color:var(--muted);
+ font-family:Oswald,"Arial Narrow",sans-serif;font-size:14px;padding:11px 2px;cursor:pointer}
+.rchip.on{background:var(--amber);color:#1A1208;border-color:var(--amber)}
+.transport{display:flex;gap:6px;margin:0 0 22px;flex-wrap:wrap}
+.tbtn{flex:1;min-width:74px;background:var(--surface);border:1px solid var(--line);border-radius:7px;
+ color:var(--ink);font:inherit;font-size:13px;padding:14px 6px;cursor:pointer}
+.tbtn.on{border-color:var(--amber);color:var(--amber)}
+.facts{margin-bottom:8px}
+.fact{display:flex;gap:12px;align-items:baseline;padding:11px 0;border-bottom:1px solid var(--line)}
+.fact span{flex:0 0 42%;font-size:12px;color:var(--muted)}
+.fact b{flex:1;font-weight:400;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+ font-size:14px;color:var(--ink);letter-spacing:.02em}
+.dia{margin-bottom:20px}
+.diarow{display:flex;align-items:baseline;gap:10px;padding:9px 0;border-bottom:1px solid var(--line)}
+.dnum{flex:0 0 62px;font-family:Oswald,"Arial Narrow",sans-serif;font-size:15px;color:var(--amber)}
+.dname{flex:1;font-family:ui-monospace,monospace;font-size:14px}
+.dsev{flex:1;font-family:ui-monospace,monospace;font-size:13px;color:var(--muted);text-align:right}
+.keynote{margin:0 0 10px}
+.stagecount{float:right;font-style:normal;font-family:ui-monospace,monospace;font-size:10px;color:var(--muted)}
+.stagewhy{color:var(--muted);font-size:12.5px;line-height:1.5;margin:0 0 12px}
+.steprow{width:100%;display:flex;align-items:center;gap:10px;background:var(--surface);
+ border:1px solid var(--line);border-radius:7px;padding:14px 14px;margin-bottom:7px;
+ color:var(--ink);font:inherit;cursor:pointer;text-align:left}
+.steprow.now{border-color:rgba(232,163,61,.45);box-shadow:0 0 22px -12px rgba(232,163,61,.6)}
+.steprow.done .stepname{color:var(--muted)}
+.stepname{flex:1;font-size:14px;line-height:1.3}
+.mark{flex:0 0 16px;text-align:center;font-size:13px;line-height:1;color:#4A3E31}
+.steprow.now .mark{color:var(--amber);font-size:10px}
+.steprow.done .mark{color:var(--moss);font-size:15px;font-weight:700}
+.abnote{margin:0 0 12px}
+.abgrid{display:grid;gap:7px;margin-bottom:14px}
+.abgrid.cols-1{grid-template-columns:1fr}
+.abgrid.cols-2{grid-template-columns:repeat(2,1fr)}
+.abgrid.cols-3{grid-template-columns:repeat(3,1fr)}
+.abgrid.cols-1 .abbtn{min-height:62px}
+.abbtn{background:var(--surface-2);border:1px solid var(--line);border-radius:7px;color:var(--ink);
+ font-family:Oswald,"Arial Narrow",sans-serif;font-size:16px;
+ padding:14px 8px;cursor:pointer;line-height:1.15}
+.abbtn.on{border-color:var(--amber);color:var(--amber)}
+.ablabel{text-align:center;font-family:Oswald,"Arial Narrow",sans-serif;font-size:18px;
+ color:var(--moss);margin:0 0 18px}
+
+.kq{display:block;font-family:ui-sans-serif,system-ui,sans-serif;font-size:10px;
+ letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
+.kn{display:block;font-size:20px;line-height:1}
+.key:active .kq,.key.hit .kq,.abbtn.on .kq{color:#5A4526}
+.abbtn.on .kq{color:var(--amber)}
+.key.dead .kq{color:rgba(237,224,208,.14)}
+.bar-fill.part{background:repeating-linear-gradient(90deg,#7A6750 0 3px,transparent 3px 6px)}
+.row-num.part{color:#6B5A45;font-size:11px}
+.toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,20px);opacity:0;
+ background:var(--surface-2);border:1px solid rgba(232,163,61,.4);color:var(--ink);
+ font-size:13px;padding:13px 20px;border-radius:30px;z-index:99;max-width:88%;
+ text-align:center;transition:opacity .2s ease,transform .2s ease;pointer-events:none}
+.toast.go{opacity:1;transform:translate(-50%,0)}
+.bktext{width:100%;height:110px;background:#12100D;border:1px solid var(--line);border-radius:7px;
+ color:var(--muted);font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;
+ padding:11px;margin:10px 0 18px;resize:vertical;-webkit-user-select:text;user-select:text}
+.rootbar{display:flex;align-items:center;gap:10px;margin:0 0 12px}
+.rootnow{flex:1;font-size:13px;color:var(--muted)}
+.rootnow b{font-family:Oswald,"Arial Narrow",sans-serif;font-size:17px;color:var(--amber);
+ font-weight:400;margin-left:6px}
+.rootnew{background:none;border:1px solid var(--line);border-radius:20px;color:var(--muted);
+ font:inherit;font-size:11px;letter-spacing:.1em;padding:9px 15px;cursor:pointer}
+.rootmode{width:100%;background:none;border:1px dashed var(--line);border-radius:7px;
+ color:var(--muted);font:inherit;font-size:12px;padding:11px;margin:0 0 14px;cursor:pointer}
+.rootmode b{color:var(--amber);font-weight:400;margin-left:4px}
+.masthead{display:flex;align-items:baseline;flex-wrap:wrap;gap:0 10px;
+ padding:4px 0 20px;border-bottom:1px solid var(--line);margin-bottom:22px}
+.brand{flex:0 0 100%;font-size:10px;letter-spacing:.28em;text-transform:uppercase;
+ color:var(--amber);font-weight:600;margin-bottom:7px}
+.apptitle{flex:1;margin:0;font-family:Oswald,"Arial Narrow",Impact,sans-serif;
+ font-weight:600;font-size:27px;line-height:1;letter-spacing:.01em;text-transform:uppercase}
+.tally{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;color:var(--muted)}
+.actions{display:flex;gap:8px;margin:0 0 26px}
+.actions .primary{flex:2;margin-top:0}
+.actions .half{flex:1;padding:17px 6px}
+
+.theory{color:var(--ink);font-size:14.5px;line-height:1.62;margin:0 0 18px;opacity:.92}
+.tcards{margin-bottom:8px}
+.tcard{background:var(--surface);border:1px solid var(--line);border-radius:7px;
+ padding:14px 15px;margin-bottom:8px}
+.thead{display:flex;align-items:baseline;gap:10px;margin-bottom:6px}
+.tname{flex:1;font-family:Oswald,"Arial Narrow",sans-serif;font-size:16px;color:var(--amber)}
+.tform{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;color:var(--muted);
+ text-align:right;white-space:nowrap}
+.tdesc{margin:0;font-size:13.5px;line-height:1.55;color:var(--muted)}
+
+.chapter{width:100%;display:flex;align-items:center;gap:10px;background:var(--surface);
+ border:1px solid var(--line);border-radius:7px;padding:15px 14px;margin-bottom:7px;
+ color:var(--ink);font:inherit;cursor:pointer;text-align:left}
+.chapter.here{border-color:rgba(232,163,61,.45)}
+.chapter.open{background:var(--surface-2);margin-bottom:0;border-bottom-left-radius:0;border-bottom-right-radius:0}
+.chapter.done .chname{color:var(--muted)}
+.chnum{flex:0 0 auto;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;color:var(--muted)}
+.chname{flex:1;font-family:Oswald,"Arial Narrow",sans-serif;font-size:16px}
+.chcount{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;color:var(--muted)}
+.chapter.here .mark{color:var(--amber)}
+.chapter.done .mark{color:var(--moss)}
+.chapterbody{border:1px solid var(--line);border-top:none;border-radius:0 0 7px 7px;
+ padding:14px 12px 8px;margin-bottom:14px}
+.chapterbody .stagewhy{margin-bottom:12px}
+.chapterbody .steprow:last-child{margin-bottom:0}
+
+.theorytop{color:var(--ink);opacity:.93;font-size:15px;line-height:1.6;margin:0 0 20px}
+.listen{margin:0 0 10px;font-size:13.5px;line-height:1.5;color:var(--amber);opacity:.9}
+
+.prompt{text-align:center;font-family:Oswald,"Arial Narrow",sans-serif;font-size:21px;
+ color:var(--ink);padding:6px 8px 14px;line-height:1.25}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+/* ============================== THEORY DATA ============================== */
+const IV = [
+  ["m2","m2","Minor 2nd",1],["M2","M2","Major 2nd",2],["m3","m3","Minor 3rd",3],
+  ["M3","M3","Major 3rd",4],["P4","P4","Perfect 4th",5],["TT","TT","Tritone",6],
+  ["P5","P5","Perfect 5th",7],["m6","m6","Minor 6th",8],["M6","M6","Major 6th",9],
+  ["m7","m7","Minor 7th",10],["M7","M7","Major 7th",11],["P8","P8","Octave",12]
+].map(([k,n,f,s])=>({k,n,full:f,s}));
+
+const DEG = [
+  ["ra","ra","flat 2nd",1],["re","re","2nd",2],["me","me","flat 3rd",3],
+  ["mi","mi","3rd",4],["fa","fa","4th",5],["fi","fi","sharp 4th",6],
+  ["sol","sol","5th",7],["le","le","flat 6th",8],["la","la","6th",9],
+  ["te","te","flat 7th",10],["ti","ti","7th",11],["do","do","octave",12]
+].map(([k,n,f,s])=>({k,n,full:f,s}));
+
+const TRIADS = [
+  ["maj","Major",[0,4,7],[0,2,4]],["min","Minor",[0,3,7],[0,2,4]],["dim","Dim",[0,3,6],[0,2,4]],
+  ["aug","Aug",[0,4,8],[0,2,4]],["sus2","Sus2",[0,2,7],[0,1,4]],["sus4","Sus4",[0,5,7],[0,3,4]]
+].map(([k,n,v,ls])=>({k,n,v,ls}));
+
+const SEVENTHS = [
+  ["maj7","maj7",[0,4,7,11],[0,2,4,6]],["dom7","7",[0,4,7,10],[0,2,4,6]],["min7","m7",[0,3,7,10],[0,2,4,6]],
+  ["mMaj7","mMaj7",[0,3,7,11],[0,2,4,6]],["m7b5","m7b5",[0,3,6,10],[0,2,4,6]],["dim7","dim7",[0,3,6,9],[0,2,4,6]],
+  ["7sus4","7sus4",[0,5,7,10],[0,3,4,6]],["aug7","7#5",[0,4,8,10],[0,2,4,6]],["maj7s5","maj7#5",[0,4,8,11],[0,2,4,6]]
+].map(([k,n,v,ls])=>({k,n,v,ls}));
+
+const MAJ_MODES = [
+  ["ion","Ionian",[0,2,4,5,7,9,11],[0,1,2,3,4,5,6]],["dor","Dorian",[0,2,3,5,7,9,10],[0,1,2,3,4,5,6]],
+  ["phr","Phrygian",[0,1,3,5,7,8,10],[0,1,2,3,4,5,6]],["lyd","Lydian",[0,2,4,6,7,9,11],[0,1,2,3,4,5,6]],
+  ["mix","Mixolydian",[0,2,4,5,7,9,10],[0,1,2,3,4,5,6]],["aeo","Aeolian",[0,2,3,5,7,8,10],[0,1,2,3,4,5,6]],
+  ["loc","Locrian",[0,1,3,5,6,8,10],[0,1,2,3,4,5,6]]
+].map(([k,n,v,ls])=>({k,n,v,ls}));
+
+const MEL_MODES = [
+  ["mm","Mel minor",[0,2,3,5,7,9,11],[0,1,2,3,4,5,6]],["dorb2","Dorian b2",[0,1,3,5,7,9,10],[0,1,2,3,4,5,6]],
+  ["lydaug","Lydian aug",[0,2,4,6,8,9,11],[0,1,2,3,4,5,6]],["lyddom","Lydian dom",[0,2,4,6,7,9,10],[0,1,2,3,4,5,6]],
+  ["mixb6","Mixo b6",[0,2,4,5,7,8,10],[0,1,2,3,4,5,6]],["loc2","Locrian #2",[0,2,3,5,6,8,10],[0,1,2,3,4,5,6]],
+  ["alt","Altered",[0,1,3,4,6,8,10],[0,1,2,3,4,5,6]]
+].map(([k,n,v,ls])=>({k,n,v,ls}));
+
+const HARM_MODES = [
+  ["hm","Harm minor",[0,2,3,5,7,8,11],[0,1,2,3,4,5,6]],["loc6","Locrian #6",[0,1,3,4,6,8,9],[0,1,2,3,4,5,6]],
+  ["ion5","Ionian #5",[0,2,4,5,8,9,11],[0,1,2,3,4,5,6]],["dor4","Dorian #4",[0,2,3,6,7,9,10],[0,1,2,3,4,5,6]],
+  ["phrdom","Phryg dom",[0,1,4,5,7,8,10],[0,1,2,3,4,5,6]],["lyd2","Lydian #2",[0,3,4,6,7,9,11],[0,1,2,3,4,5,6]],
+  ["altdim","Alt dim7",[0,1,3,4,6,7,9],[0,1,2,3,4,5,6]]
+].map(([k,n,v,ls])=>({k,n,v,ls}));
+
+const PENTA = [
+  ["majp","Major pent",[0,2,4,7,9],[0,1,2,4,5]],["minp","Minor pent",[0,3,5,7,10],[0,2,3,4,6]],
+  ["blues","Blues",[0,3,5,6,7,10],[0,2,3,4,4,6]],["hira","Hirajoshi",[0,2,3,7,8],[0,1,2,4,5]],
+  ["insen","In Sen",[0,1,5,7,10],[0,1,3,4,6]],["kumoi","Kumoi",[0,2,3,7,9],[0,1,2,4,5]],
+  ["egy","Egyptian",[0,2,5,7,10],[0,1,3,4,6]]
+].map(([k,n,v,ls])=>({k,n,v,ls}));
+
+const SYMM = [
+  ["wt","Whole tone",[0,2,4,6,8,10],[0,1,2,3,4,5]],["hw","Dim H-W",[0,1,3,4,6,7,9,10],[0,1,2,2,3,4,5,6]],
+  ["wh","Dim W-H",[0,2,3,5,6,8,9,11],[0,1,2,3,4,5,5,6]],["augsc","Augmented",[0,3,4,7,8,11],[0,2,2,4,5,6]],
+  ["chrom","Chromatic",[0,1,2,3,4,5,6,7,8,9,10,11],[0,0,1,1,2,3,3,4,4,5,5,6]]
+].map(([k,n,v,ls])=>({k,n,v,ls}));
+
+const INV3 = [{k:"r",n:"Root"},{k:"1",n:"1st inv"},{k:"2",n:"2nd inv"}];
+const INV4 = INV3.concat([{k:"3",n:"3rd inv"}]);
+
+
+const IVQ={"m2": ["minor", "2nd"], "M2": ["major", "2nd"], "m3": ["minor", "3rd"], "M3": ["major", "3rd"], "P4": ["perfect", "4th"], "TT": ["", "tritone"], "P5": ["perfect", "5th"], "m6": ["minor", "6th"], "M6": ["major", "6th"], "m7": ["minor", "7th"], "M7": ["major", "7th"], "P8": ["", "octave"]};
+IV.forEach(function(o){var x=IVQ[o.k];if(x){o.qw=x[0];o.num=x[1];}});
+/* ===== chord qualities ===== */
+const Q={maj:[0,4,7],min:[0,3,7],dim:[0,3,6],aug:[0,4,8],sus4:[0,5,7],
+maj7:[0,4,7,11],dom7:[0,4,7,10],min7:[0,3,7,10],m7b5:[0,3,6,10],dim7:[0,3,6,9]};
+
+/* ===== progression decks: [semitoneFromTonic, quality] ===== */
+const CAD=[
+ {k:"pac",n:"Perfect (V-I)",lab:["I","IV","V","I"],p:[[0,"maj"],[5,"maj"],[7,"maj"],[0,"maj"]]},
+ {k:"plag",n:"Plagal (IV-I)",lab:["I","V","IV","I"],p:[[0,"maj"],[7,"maj"],[5,"maj"],[0,"maj"]]},
+ {k:"half",n:"Half (ends V)",lab:["I","vi","IV","V"],p:[[0,"maj"],[9,"min"],[5,"maj"],[7,"maj"]]},
+ {k:"dec",n:"Deceptive (V-vi)",lab:["I","IV","V","vi"],p:[[0,"maj"],[5,"maj"],[7,"maj"],[9,"min"]]},
+ {k:"phry",n:"Phrygian half",lab:["i","♭VI","iv","V"],p:[[0,"min"],[8,"maj"],[5,"min"],[7,"maj"]]}];
+
+const PROG_MAJ=[
+ {k:"1451",n:"I-IV-V-I",lab:["I","IV","V","I"],p:[[0,"maj"],[5,"maj"],[7,"maj"],[0,"maj"]]},
+ {k:"1645",n:"I-vi-IV-V",lab:["I","vi","IV","V"],p:[[0,"maj"],[9,"min"],[5,"maj"],[7,"maj"]]},
+ {k:"1564",n:"I-V-vi-IV",lab:["I","V","vi","IV"],p:[[0,"maj"],[7,"maj"],[9,"min"],[5,"maj"]]},
+ {k:"6415",n:"vi-IV-I-V",lab:["vi","IV","I","V"],p:[[9,"min"],[5,"maj"],[0,"maj"],[7,"maj"]]},
+ {k:"251",n:"ii-V-I",lab:["ii7","V7","Imaj7"],p:[[2,"min7"],[7,"dom7"],[0,"maj7"]]},
+ {k:"1345",n:"I-iii-IV-V",lab:["I","iii","IV","V"],p:[[0,"maj"],[4,"min"],[5,"maj"],[7,"maj"]]},
+ {k:"1415",n:"I-IV-I-V",lab:["I","IV","I","V"],p:[[0,"maj"],[5,"maj"],[0,"maj"],[7,"maj"]]},
+ {k:"circ",n:"Circle of 5ths",lab:["iii7","vi7","ii7","V7"],p:[[4,"min7"],[9,"min7"],[2,"min7"],[7,"dom7"]]}];
+
+const PROG_MIN=[
+ {k:"i4v",n:"i-iv-V-i",lab:["i","iv","V","i"],p:[[0,"min"],[5,"min"],[7,"maj"],[0,"min"]]},
+ {k:"i637",n:"i-♭VI-♭III-♭VII",lab:["i","♭VI","♭III","♭VII"],p:[[0,"min"],[8,"maj"],[3,"maj"],[10,"maj"]]},
+ {k:"and",n:"Andalusian",lab:["i","♭VII","♭VI","V"],p:[[0,"min"],[10,"maj"],[8,"maj"],[7,"maj"]]},
+ {k:"i67i",n:"i-♭VI-♭VII-i",lab:["i","♭VI","♭VII","i"],p:[[0,"min"],[8,"maj"],[10,"maj"],[0,"min"]]},
+ {k:"251m",n:"iiø-V7-i7",lab:["ii&#248;","V7","i7"],p:[[2,"m7b5"],[7,"dom7"],[0,"min7"]]},
+ {k:"i4i5",n:"i-iv-i-V",lab:["i","iv","i","V"],p:[[0,"min"],[5,"min"],[0,"min"],[7,"maj"]]}];
+
+const ROOTMOT=[
+ {k:"d5",n:"Down 5th",d:-7},{k:"u5",n:"Up 5th",d:7},
+ {k:"u2",n:"Up 2nd",d:2},{k:"d2",n:"Down 2nd",d:-2},
+ {k:"u3",n:"Up 3rd",d:4},{k:"d3",n:"Down 3rd",d:-3},
+ {k:"tt",n:"Tritone",d:6}];
+
+const BORROW=[
+ {k:"b7",n:"♭VII",lab:["I","♭VII","I"],p:[[0,"maj"],[10,"maj"],[0,"maj"]]},
+ {k:"b6",n:"♭VI",lab:["I","♭VI","I"],p:[[0,"maj"],[8,"maj"],[0,"maj"]]},
+ {k:"iv",n:"minor iv",lab:["I","iv","I"],p:[[0,"maj"],[5,"min"],[0,"maj"]]},
+ {k:"b3",n:"♭III",lab:["I","♭III","I"],p:[[0,"maj"],[3,"maj"],[0,"maj"]]},
+ {k:"b2",n:"♭II (Neapolitan)",lab:["I","♭II","I"],p:[[0,"maj"],[1,"maj"],[0,"maj"]]},
+ {k:"ii0",n:"ii dim",lab:["I","ii&#176;","I"],p:[[0,"maj"],[2,"dim"],[0,"maj"]]}];
+
+const SECOND=[
+ {k:"vv",n:"V/V",lab:["I","V/V","V"],p:[[0,"maj"],[2,"dom7"],[7,"maj"]]},
+ {k:"vii",n:"V/ii",lab:["I","V/ii","ii"],p:[[0,"maj"],[9,"dom7"],[2,"min"]]},
+ {k:"vvi",n:"V/vi",lab:["I","V/vi","vi"],p:[[0,"maj"],[4,"dom7"],[9,"min"]]},
+ {k:"viv",n:"V/IV",lab:["I","V/IV","IV"],p:[[0,"maj"],[0,"dom7"],[5,"maj"]]},
+ {k:"viii",n:"V/iii",lab:["I","V/iii","iii"],p:[[0,"maj"],[11,"dom7"],[4,"min"]]},
+ {k:"tsub",n:"Tritone sub",lab:["ii7","♭II7","Imaj7"],p:[[2,"min7"],[1,"dom7"],[0,"maj7"]]}];
+
+const BLUES=[
+ {k:"b12",n:"12-bar basic",lab:["I7","I7","I7","I7","IV7","IV7","I7","I7","V7","IV7","I7","V7"],p:[[0,"dom7"],[0,"dom7"],[0,"dom7"],[0,"dom7"],[5,"dom7"],[5,"dom7"],[0,"dom7"],[0,"dom7"],[7,"dom7"],[5,"dom7"],[0,"dom7"],[7,"dom7"]]},
+ {k:"bqc",n:"Quick change",lab:["I7","IV7","I7","I7","IV7","IV7","I7","I7","V7","IV7","I7","V7"],p:[[0,"dom7"],[5,"dom7"],[0,"dom7"],[0,"dom7"],[5,"dom7"],[5,"dom7"],[0,"dom7"],[0,"dom7"],[7,"dom7"],[5,"dom7"],[0,"dom7"],[7,"dom7"]]},
+ {k:"bjz",n:"Jazz blues",lab:["I7","IV7","I7","v7","IV7","IV7","I7","VI7","ii7","V7","I7","V7"],p:[[0,"dom7"],[5,"dom7"],[0,"dom7"],[7,"min7"],[5,"dom7"],[5,"dom7"],[0,"dom7"],[9,"dom7"],[2,"min7"],[7,"dom7"],[0,"dom7"],[7,"dom7"]]},
+ {k:"bmin",n:"Minor blues",lab:["i7","i7","i7","i7","iv7","iv7","i7","i7","♭VI7","V7","i7","V7"],p:[[0,"min7"],[0,"min7"],[0,"min7"],[0,"min7"],[5,"min7"],[5,"min7"],[0,"min7"],[0,"min7"],[8,"dom7"],[7,"dom7"],[0,"min7"],[7,"dom7"]]}];
+
+const MODUL_LAB=["I","V","I","I'","V'","I'"];
+const MODUL=[
+ {k:"semi",n:"Up a semitone",d:1},{k:"dom",n:"To the dominant",d:7},
+ {k:"rel",n:"To relative minor",d:9,minor:true},{k:"par",n:"To parallel minor",d:0,minor:true},
+ {k:"med",n:"Chromatic mediant",d:4}];
+
+/* ===== rhythm decks ===== */
+const SUBDIV=[
+ {k:"q",n:"Quarters",n_:1},{k:"e",n:"Eighths",n_:2},{k:"t8",n:"8th triplets",n_:3},
+ {k:"s16",n:"Sixteenths",n_:4},{k:"quin",n:"Quintuplets",n_:5},{k:"sext",n:"Sextuplets",n_:6},
+ {k:"sep",n:"Septuplets",n_:7},{k:"t32",n:"32nds",n_:8}];
+const METRE=[
+ {k:"44",n:"4/4",b:4,sub:2},{k:"34",n:"3/4",b:3,sub:2},{k:"24",n:"2/4",b:2,sub:2},
+ {k:"68",n:"6/8",b:2,sub:3},{k:"98",n:"9/8",b:3,sub:3},{k:"128",n:"12/8",b:4,sub:3},
+ {k:"54",n:"5/4",b:5,sub:2},{k:"78",n:"7/8",b:7,sub:1}];
+const FEEL=[
+ {k:"str8",n:"Straight 8ths",sw:0.5,div:2},{k:"sw8",n:"Swung 8ths",sw:0.66,div:2},
+ {k:"str16",n:"Straight 16ths",sw:0.5,div:4},{k:"gal",n:"Gallop",sw:0.75,div:2}];
+const POLY=[{k:"32",n:"3 over 2",a:3,b:2},{k:"43",n:"4 over 3",a:4,b:3},
+ {k:"54",n:"5 over 4",a:5,b:4},{k:"74",n:"7 over 4",a:7,b:4}];
+const TEMPO=[{k:"t1",n:"60-75",lo:60,hi:75},{k:"t2",n:"76-95",lo:76,hi:95},
+ {k:"t3",n:"96-115",lo:96,hi:115},{k:"t4",n:"116-140",lo:116,hi:140},
+ {k:"t5",n:"141-170",lo:141,hi:170},{k:"t6",n:"171-200",lo:171,hi:200}];
+
+/* ===== EQ decks ===== */
+const EQBAND=[{k:"63",n:"63 Hz",f:63},{k:"125",n:"125 Hz",f:125},{k:"250",n:"250 Hz",f:250},
+ {k:"500",n:"500 Hz",f:500},{k:"1k",n:"1 kHz",f:1000},{k:"2k",n:"2 kHz",f:2000},
+ {k:"4k",n:"4 kHz",f:4000},{k:"8k",n:"8 kHz",f:8000},{k:"16k",n:"16 kHz",f:16000}];
+const EQTYPE=[{k:"boost",n:"Bell boost",t:"peaking",g:12},{k:"cut",n:"Bell cut",t:"peaking",g:-12},
+ {k:"hs",n:"High shelf",t:"highshelf",g:12},{k:"ls",n:"Low shelf",t:"lowshelf",g:12},
+ {k:"hp",n:"High-pass",t:"highpass",g:0},{k:"lp",n:"Low-pass",t:"lowpass",g:0}];
+const EQQ=[{k:"nar",n:"Narrow",q:8},{k:"med",n:"Medium",q:2.5},{k:"wid",n:"Wide",q:0.7}];
+
+/* ===== extended chords & voicings ===== */
+const EXT=[
+ {k:"6",n:"6",v:[0,4,7,9],ls:[0,2,4,5]},{k:"m6",n:"m6",v:[0,3,7,9],ls:[0,2,4,5]},{k:"69",n:"6/9",v:[0,4,7,9,14],ls:[0,2,4,5,8]},
+ {k:"add9",n:"add9",v:[0,4,7,14],ls:[0,2,4,8]},{k:"maj9",n:"maj9",v:[0,4,7,11,14],ls:[0,2,4,6,8]},
+ {k:"9",n:"9",v:[0,4,7,10,14],ls:[0,2,4,6,8]},{k:"m9",n:"m9",v:[0,3,7,10,14],ls:[0,2,4,6,8]},
+ {k:"13",n:"13",v:[0,4,7,10,21],ls:[0,2,4,6,12]},{k:"m11",n:"m11",v:[0,3,7,10,17],ls:[0,2,4,6,10]},
+ {k:"7b9",n:"7b9",v:[0,4,7,10,13],ls:[0,2,4,6,8]},{k:"7s9",n:"7#9",v:[0,4,7,10,15],ls:[0,2,4,6,8]},
+ {k:"7s11",n:"7#11",v:[0,4,10,18],ls:[0,2,6,10]}];
+const VOICING=[
+ {k:"close",n:"Close",f:v=>v},
+ {k:"drop2",n:"Drop 2",f:v=>{const a=v.slice();a[a.length-2]-=12;return a}},
+ {k:"drop3",n:"Drop 3",f:v=>{const a=v.slice();a[a.length-3]-=12;return a}},
+ {k:"open",n:"Open",f:v=>v.map((x,i)=>i%2?x+12:x)},
+ {k:"shell",n:"Shell",f:v=>[v[0],v[2],v[3]!==undefined?v[3]:v[1]+12]}];
+const COMPOUND=[
+ {k:"m9i",n:"m9",s:13},{k:"M9i",n:"M9",s:14},{k:"m10",n:"m10",s:15},{k:"M10",n:"M10",s:16},
+ {k:"P11",n:"P11",s:17},{k:"a11",n:"#11",s:18},{k:"P12",n:"P12",s:19},{k:"m13",n:"b13",s:20},
+ {k:"M13",n:"M13",s:21},{k:"m14",n:"m14",s:22},{k:"M14",n:"M14",s:23}];
+
+const COMPQ={"m9i": ["minor", "9th"], "M9i": ["major", "9th"], "m10": ["minor", "10th"], "M10": ["major", "10th"], "P11": ["perfect", "11th"], "a11": ["aug", "11th"], "P12": ["perfect", "12th"], "m13": ["minor", "13th"], "M13": ["major", "13th"], "m14": ["minor", "14th"], "M14": ["major", "14th"]};
+COMPOUND.forEach(function(o){var x=COMPQ[o.k];if(x){o.qw=x[0];o.num=x[1];}});
+[EXT,SEVENTHS].forEach(function(A){A.forEach(function(o){
+ o.n=o.n.replace(/b/g,"\u266d").replace(/#/g,"\u266f");});});
+/* Items that cannot be drilled in-browser: manual 0-5 rating only */
+const LOG = [
+ ["Melodic dictation", [
+  ["Length","2-3 notes|4 notes|5-6 notes|1 bar|2 bars|4 bars|8 bars"],
+  ["Content","Stepwise only|Triadic leaps only|Mixed steps and leaps|One chromatic note|Fully chromatic|Atonal"],
+  ["Context","Major key|Natural minor|Harmonic minor|Modal|Pentatonic|Key change mid-phrase"],
+  ["Conditions","Unlimited replays|Three replays|Single hearing|Pitch only|Rhythm only|Fast tempo|Over backing harmony|Buried in a full mix"],
+  ["Memory","Echo a phrase after 5s|Echo a phrase after 30s|Recall it transposed"]]],
+ ["Transcription", [
+  ["By ear, off-device","Guitar riff|Guitar solo|Vocal melody|Bass line|Drum pattern|Full song chart|Horn line|Keyboard part"],
+  ["Voice leading","Identify the moving voice|Count common tones|Suspension and resolution|Bass line contour|Slash chord bass"]]],
+ ["Rhythm, off-device", [
+  ["Dictation","1 bar of eighths|1 bar of sixteenths|2 bars mixed|4 bars syncopated"],
+  ["Metal specifics","Double-kick 8ths|Double-kick 16ths|Gallop and reverse gallop|Blast beat types|Breakdown feel"],
+  ["Advanced","Metric modulation|Gradual tempo drift|Swing percentage estimate|Clave 3-2 vs 2-3|Rumba and bossa clave"]]],
+ ["Production ear", [
+  ["Dynamics","Compression present|Ratio estimate|Attack time|Release time|Amount of gain reduction|Parallel vs serial"],
+  ["Time-based","Reverb present|Reverb type|Decay time|Pre-delay|Delay time|Feedback amount"],
+  ["Modulation","Chorus vs flanger vs phaser|Rate and depth|Tremolo vs vibrato"],
+  ["Distortion","Overdrive vs distortion vs fuzz|Amount of gain|Odd vs even harmonics|Clipping type"],
+  ["Stereo","Mono vs stereo|Pan position|Width and mid-side|Phase issues"],
+  ["Timbre","Instrument family|Specific instrument|Synthesis type|Guitar pickup position"],
+  ["EQ on real material","On a full mix|On solo guitar|On solo vocal|On drums|Third-octave resolution"]]],
+ ["Singing", [
+  ["Pitch matching","Match a played pitch|Match within 10 cents|Match after 5s silence|Match in another octave"],
+  ["Sing intervals","Ascending simple|Descending simple|Compound"],
+  ["Sing degrees","Any major degree on cue|Any natural minor degree|Chromatic degrees"],
+  ["Sing chords","Major triad arpeggio|All triad qualities|Seventh arpeggios|Guide tones over ii-V-I"],
+  ["Sing scales","Major from any tonic|Seven modes from one tonic|Pentatonic and blues|Melodic and harmonic minor"],
+  ["Sight-singing","Stepwise diatonic|With triadic leaps|With chromatics|Rhythmically complex"],
+  ["Independence","Over a static drone|Melody while playing chords|Root while chords change|Harmony line against a record"],
+  ["CVT modes","Neutral, full range|Curbing under effort|Overdrive under effort|Edge under effort"]]],
+ ["Tuning", [
+  ["Fine pitch","Out by 5 cents|Out by 20 cents|Beat-rate counting|Equal vs just vs Pythagorean|A=440 vs A=432"]]]
+];
+/* ================================ DECKS ================================= */
+
+
+const BARS=[{k:"b4",n:"4 bars",bars:4},{k:"b8",n:"8 bars",bars:8},
+ {k:"b12",n:"12 bars",bars:12},{k:"b16",n:"16 bars",bars:16}];
+const CHLEN=[{k:"c1",n:"1 bar",bars:1},{k:"c2",n:"2 bars",bars:2},{k:"c4",n:"4 bars",bars:4}];
+const TUNE=[{k:"t0",n:"In tune",c:0},{k:"tsh",n:"Sharp",c:1},{k:"tfl",n:"Flat",c:-1}];
+/* Two neutral harmonic beds, one major one minor, so counting bars is not
+   tied to a single mood. Deliberately not a blues or any other named form:
+   if a length always carried its own harmony you would learn to spot the
+   harmony instead of counting. */
+const FORM_MAJ={s:[0,5,7,0,9,5,7,0,2,7,5,0,9,2,7,0],q:{0:"maj",2:"min",5:"maj",7:"maj",9:"min"}};
+const FORM_MIN={s:[0,8,10,0,5,0,10,0,3,10,8,0,5,8,10,0],q:{0:"min",3:"maj",5:"min",8:"maj",10:"maj"}};
+const FORMS=[FORM_MAJ,FORM_MIN];
+const NOTE_NAMES=["C","D\u266d","D","E\u266d","E","F","F\u266f","G","A\u266d","A","B\u266d","B"];
+const NOTES=NOTE_NAMES.map(function(n,i){return {k:String(i),n:n};});
+function noteName(pc){return NOTE_NAMES[((pc%12)+12)%12];}
+const IV_3RDS=IV.filter(function(i){return i.k==="m3"||i.k==="M3";});
+const IV_ANCHOR=IV.filter(function(i){return ["P4","P5","P8","m3","M3"].indexOf(i.k)>-1;});
+const CHDEG=[
+ {q:"maj",n:"major",v:[0,4,7]},{q:"min",n:"minor",v:[0,3,7]},
+ {q:"dim",n:"diminished",v:[0,3,6]},{q:"aug",n:"augmented",v:[0,4,8]},
+ {q:"maj7",n:"maj7",v:[0,4,7,11]},{q:"dom7",n:"7",v:[0,4,7,10]},
+ {q:"min7",n:"m7",v:[0,3,7,10]},{q:"m7b5",n:"m7\u266d5",v:[0,3,6,10]}];
+const DEGNAMES=["root","3rd","5th","7th"];
+const DECKS=[
+{id:"iv-asc",g:"Intervals",name:"Ascending",tier:1,kind:"interval",dir:"asc",opts:IV,cols:3},
+{id:"iv-desc",g:"Intervals",name:"Descending",tier:1,kind:"interval",dir:"desc",opts:IV,cols:3},
+{id:"iv-harm",g:"Intervals",name:"Harmonic",tier:2,kind:"interval",dir:"harm",opts:IV,cols:3},
+{id:"iv-comp",g:"Intervals",name:"Compound",tier:3,kind:"compound",opts:COMPOUND,cols:3},
+{id:"deg-maj",g:"Intervals",name:"Degrees in a major key",tier:2,kind:"degree",mode:"maj",opts:DEG,cols:3},
+{id:"deg-min",g:"Intervals",name:"Degrees in a minor key",tier:3,kind:"degree",mode:"min",opts:DEG,cols:3},
+
+{id:"tri-q",g:"Chords",name:"Triad quality",tier:1,kind:"chord",set:TRIADS,opts:TRIADS,cols:2},
+{id:"tri-arp",g:"Chords",name:"Triad quality, arpeggiated",tier:1,kind:"arp",set:TRIADS,opts:TRIADS,cols:2},
+{id:"tri-i",g:"Chords",name:"Triad inversion",tier:2,kind:"inv",set:TRIADS,opts:INV3,cols:1},
+{id:"sev-q",g:"Chords",name:"7th quality",tier:2,kind:"chord",set:SEVENTHS,opts:SEVENTHS,cols:3},
+{id:"sev-arp",g:"Chords",name:"7th quality, arpeggiated",tier:2,kind:"arp",set:SEVENTHS,opts:SEVENTHS,cols:3},
+{id:"sev-i",g:"Chords",name:"7th inversion",tier:3,kind:"inv",set:SEVENTHS,opts:INV4,cols:2},
+{id:"ext-q",g:"Chords",name:"Extended and altered",tier:4,kind:"chord",set:EXT,opts:EXT,cols:3},
+{id:"voi",g:"Chords",name:"Voicing type",tier:4,kind:"voicing",opts:VOICING,cols:1},
+
+{id:"sc-maj",g:"Scales",name:"Major modes",tier:2,kind:"scale",opts:MAJ_MODES,cols:2},
+{id:"sc-drone",g:"Scales",name:"Major modes over a drone",tier:3,kind:"scale",drone:true,opts:MAJ_MODES,cols:2},
+{id:"sc-pent",g:"Scales",name:"Pentatonic and blues",tier:2,kind:"scale",opts:PENTA,cols:2},
+{id:"sc-symm",g:"Scales",name:"Symmetric",tier:3,kind:"scale",opts:SYMM,cols:2},
+{id:"sc-mel",g:"Scales",name:"Melodic minor modes",tier:4,kind:"scale",opts:MEL_MODES,cols:2},
+{id:"sc-harm",g:"Scales",name:"Harmonic minor modes",tier:4,kind:"scale",opts:HARM_MODES,cols:2},
+
+{id:"cad",g:"Harmony",name:"Cadences",tier:2,kind:"prog",opts:CAD,cols:1},
+{id:"pr-maj",g:"Harmony",name:"Major progressions",tier:2,kind:"prog",opts:PROG_MAJ,cols:2},
+{id:"pr-min",g:"Harmony",name:"Minor progressions",tier:2,kind:"prog",minor:true,opts:PROG_MIN,cols:2},
+{id:"root",g:"Harmony",name:"Root motion",tier:3,kind:"root",opts:ROOTMOT,cols:2},
+{id:"borrow",g:"Harmony",name:"Modal interchange",tier:4,kind:"prog",opts:BORROW,cols:2},
+{id:"secd",g:"Harmony",name:"Secondary dominants",tier:4,kind:"prog",opts:SECOND,cols:2},
+{id:"blues",g:"Harmony",name:"Blues forms",tier:3,kind:"prog",bars:0.66,opts:BLUES,cols:1},
+{id:"modul",g:"Harmony",name:"Modulation",tier:4,kind:"modul",opts:MODUL,cols:1},
+
+{id:"subdiv",g:"Rhythm",name:"Subdivision",tier:1,kind:"subdiv",opts:SUBDIV,cols:2},
+{id:"metre",g:"Rhythm",name:"Metre",tier:2,kind:"metre",opts:METRE,cols:2},
+{id:"feel",g:"Rhythm",name:"Feel",tier:2,kind:"feel",opts:FEEL,cols:2},
+{id:"poly",g:"Rhythm",name:"Polyrhythm",tier:4,kind:"poly",opts:POLY,cols:2},
+{id:"tempo",g:"Rhythm",name:"Tempo estimate",tier:2,kind:"tempo",opts:TEMPO,cols:2},
+
+{id:"eq-band",g:"Production",name:"EQ frequency",tier:2,kind:"eqband",opts:EQBAND,cols:3},
+{id:"eq-type",g:"Production",name:"Filter type",tier:3,kind:"eqtype",opts:EQTYPE,cols:2},
+{id:"eq-q",g:"Production",name:"Q width",tier:4,kind:"eqq",opts:EQQ,cols:1},
+
+{id:"nm-3rd",g:"Naming",name:"3rds above a note",tier:1,kind:"spell",dir:"up",set:IV_3RDS,opts:NOTES,cols:3},
+{id:"nm-anch",g:"Naming",name:"Anchors above a note",tier:2,kind:"spell",dir:"up",set:IV_ANCHOR,opts:NOTES,cols:3},
+{id:"nm-up",g:"Naming",name:"Any interval above a note",tier:3,kind:"spell",dir:"up",set:IV,opts:NOTES,cols:3},
+{id:"nm-dn",g:"Naming",name:"Any interval below a note",tier:4,kind:"spell",dir:"down",set:IV,opts:NOTES,cols:3},
+{id:"nm-ch",g:"Naming",name:"Chord tones",tier:3,kind:"spellch",opts:NOTES,cols:3},
+
+{id:"fm-bars",g:"Form",name:"Section length",tier:2,kind:"bars",opts:BARS,cols:2},
+{id:"fm-len",g:"Form",name:"How long each chord lasts",tier:2,kind:"chordlen",opts:CHLEN,cols:1},
+{id:"fm-tune",g:"Form",name:"Beats and tuning",tier:3,kind:"tune",opts:TUNE,cols:1}
+];
+const GROUPS=["Intervals","Chords","Scales","Harmony","Rhythm","Production","Naming","Form"];
+
+/* ================================ AUDIO ================================= */
+let actx=null,live=[],noiseBuf=null;
+const mtof=m=>440*Math.pow(2,(m-69)/12);
+function ctx(){if(!actx){const AC=window.AudioContext||window.webkitAudioContext;actx=new AC();}
+ if(actx.state==="suspended")actx.resume();return actx;}
+function kill(){live.forEach(n=>{try{n.stop()}catch(e){}});live=[];}
+function tone(m,at,dur,vol,cents){const c=ctx(),f=mtof(m)*Math.pow(2,(cents||0)/1200);
+ [[1,1],[2,.32],[3,.13],[4,.06]].forEach(([mu,am])=>{
+  const o=c.createOscillator(),g=c.createGain();o.type="sine";o.frequency.value=f*mu;
+  const t=c.currentTime+at;g.gain.setValueAtTime(0,t);
+  g.gain.linearRampToValueAtTime((vol==null?.2:vol)*am,t+.012);
+  g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  o.connect(g).connect(c.destination);o.start(t);o.stop(t+dur+.05);live.push(o);});}
+function click(at,freq,vol){const c=ctx(),o=c.createOscillator(),g=c.createGain();
+ o.type="square";o.frequency.value=freq;const t=c.currentTime+at;
+ g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol,t+.002);
+ g.gain.exponentialRampToValueAtTime(.0001,t+.06);
+ o.connect(g).connect(c.destination);o.start(t);o.stop(t+.09);live.push(o);}
+function noise(){const c=ctx();if(noiseBuf)return noiseBuf;
+ const len=c.sampleRate*3,b=c.createBuffer(1,len,c.sampleRate),d=b.getChannelData(0);
+ let b0=0,b1=0,b2=0;
+ for(let i=0;i<len;i++){const w=Math.random()*2-1;
+  b0=.99765*b0+w*.0990460;b1=.96300*b1+w*.2965164;b2=.57000*b2+w*1.0526913;
+  d[i]=(b0+b1+b2+w*.1848)*.16;}
+ noiseBuf=b;return b;}
+function filtered(at,dur,type,freq,gain,q){const c=ctx();
+ const s=c.createBufferSource();s.buffer=noise();s.loop=true;
+ const f=c.createBiquadFilter();f.type=type;f.frequency.value=freq;
+ f.Q.value=q;if(f.gain)f.gain.value=gain;
+ const g=c.createGain();const t=c.currentTime+at;
+ g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.5,t+.04);
+ g.gain.setValueAtTime(.5,t+dur-.06);g.gain.linearRampToValueAtTime(0,t+dur);
+ s.connect(f).connect(g).connect(c.destination);s.start(t);s.stop(t+dur+.02);live.push(s);}
+
+function playPlan(plan){kill();ctx();
+ (plan.tones||[]).forEach(e=>tone(e.m,e.t,e.d==null?1.1:e.d,e.v,e.cents));
+ (plan.clicks||[]).forEach(e=>click(e.t,e.f,e.v==null?.16:e.v));
+ (plan.noise||[]).forEach(e=>filtered(e.t,e.d,e.type,e.f,e.g,e.q));}
+
+/* ============================ QUESTION BUILDERS ========================== */
+const rnd=a=>a[Math.floor(Math.random()*a.length)];
+const rint=(lo,hi)=>lo+Math.floor(Math.random()*(hi-lo+1));
+function voice(root,semi,qual,at,dur,v){
+ return Q[qual].map(o=>({m:root+semi+o,t:at,d:dur,v:v==null?.12:v}))
+  .concat([{m:root+semi-12,t:at,d:dur,v:.11}]);}
+function progTones(root,p,barLen,minor){
+ let out=[];p.forEach((c,i)=>{out=out.concat(voice(root,c[0],c[1],i*barLen,barLen*1.15));});
+ return out;}
+
+const pick=(a,k)=>{if(!k)return rnd(a);const m=a.filter(o=>o.k===k);return m.length?m[0]:rnd(a);};
+function buildQuestion(deck,force,fixedRoot){
+ const root=fixedRoot==null?rint(52,64):fixedRoot,K=deck.kind;
+
+
+ if(K==="bars"){
+  const o=pick(deck.opts,force), bpm=168, beat=60/bpm, r=rint(52,60);
+  const F=fixedRoot==null?rnd(FORMS):FORMS[0];
+  let t=[],cl=[];
+  for(let b=0;b<o.bars;b++){
+   const semi=F.s[b%F.s.length];
+   t=t.concat(voice(r,semi,F.q[semi],b*beat*4,beat*4*0.94,0.11));
+   for(let k=0;k<4;k++)cl.push({t:(b*4+k)*beat,f:k===0?1600:900,v:k===0?0.19:0.07});
+  }
+  return{answer:o.k,plan:{tones:t,clicks:cl},label:o.n};
+ }
+ if(K==="chordlen"){
+  const o=pick(deck.opts,force), bpm=168, beat=60/bpm, r=rint(52,60), total=8;
+  const F=fixedRoot==null?rnd(FORMS):FORMS[0];
+  let t=[],cl=[];
+  for(let b=0;b<total;b++)for(let k=0;k<4;k++)
+   cl.push({t:(b*4+k)*beat,f:k===0?1600:900,v:k===0?0.19:0.07});
+  for(let i=0;i*o.bars<total;i++){
+   const semi=F.s[i%F.s.length];
+   t=t.concat(voice(r,semi,F.q[semi],i*o.bars*4*beat,o.bars*4*beat*0.94,0.11));
+  }
+  return{answer:o.k,plan:{tones:t,clicks:cl},label:o.n};
+ }
+ if(K==="tune"){
+  const o=pick(deck.opts,force), m=fixedRoot==null?rint(55,67):60;
+  const cents=o.c===0?0:o.c*(fixedRoot==null?rint(14,26):20);
+  return{answer:o.k,plan:{tones:[{m:m,t:0,d:3.2,v:.17},{m:m,t:0,d:3.2,v:.17,cents:cents}]},
+   label:o.n};
+ }
+ if(K==="spell"){
+  if(force){const pc=+force;return{answer:force,plan:{tones:[{m:60+pc,t:0,d:1.8}]},
+   label:noteName(pc),prompt:noteName(pc)};}
+  const r=rnd(ROOTS), iv=rnd(deck.set||IV), up=deck.dir!=="down";
+  const pc=up?(r.pc+iv.s)%12:(((r.pc-iv.s)%12)+12)%12;
+  const base=60+r.pc;
+  const t=up?[{m:base,t:0,d:1.0},{m:base+iv.s,t:.6,d:1.5}]
+            :[{m:base,t:0,d:1.0},{m:base-iv.s,t:.6,d:1.5}];
+  return{answer:String(pc),plan:{tones:t},label:noteName(pc),
+   prompt:iv.full+(up?" above ":" below ")+r.n};
+ }
+ if(K==="spellch"){
+  if(force){const pc=+force;return{answer:force,plan:{tones:[{m:60+pc,t:0,d:1.8}]},
+   label:noteName(pc),prompt:noteName(pc)};}
+  const r=rnd(ROOTS), c=rnd(CHDEG), di=rint(1,c.v.length-1);
+  const pc=(r.pc+c.v[di])%12;
+  const base=60+r.pc;
+  const t=c.v.map(function(o,i){return {m:base+o,t:i*.28,d:1.1,v:i===di?.24:.12};});
+  return{answer:String(pc),plan:{tones:t},label:noteName(pc),
+   prompt:"the "+DEGNAMES[di]+" of "+r.n+" "+c.n};
+ }
+ if(K==="interval"){const iv=pick(deck.opts,force);let t;
+  if(deck.dir==="asc")t=[{m:root,t:0,d:1},{m:root+iv.s,t:.62,d:1.4}];
+  else if(deck.dir==="desc")t=[{m:root+iv.s,t:0,d:1},{m:root,t:.62,d:1.4}];
+  else t=[{m:root,t:0,d:1.8},{m:root+iv.s,t:0,d:1.8}];
+  return{answer:iv.k,plan:{tones:t},label:iv.full};}
+ if(K==="compound"){const iv=pick(deck.opts,force);
+  return{answer:iv.k,plan:{tones:[{m:root-4,t:0,d:1},{m:root-4+iv.s,t:.62,d:1.5}]},label:iv.n};}
+ if(K==="degree"){const d=pick(deck.opts,force),mn=deck.mode==="min";
+  const seq=mn?[[0,"min"],[5,"min"],[7,"maj"],[0,"min"]]:[[0,"maj"],[5,"maj"],[7,"maj"],[0,"maj"]];
+  let t=[];seq.forEach((c,i)=>{t=t.concat(voice(root,c[0],c[1],i*.42,.46,.1));});
+  t.push({m:root+d.s,t:2.0,d:1.5});
+  return{answer:d.k,plan:{tones:t},label:d.full};}
+ if(K==="chord"){const c=pick(deck.set,force);
+  return{answer:c.k,plan:{tones:c.v.map(o=>({m:root+o,t:0,d:2.2,v:.13}))},label:c.n};}
+ if(K==="arp"){const c=pick(deck.set,force);
+  return{answer:c.k,plan:{tones:c.v.map((o,i)=>({m:root+o,t:i*.3,d:.9}))},label:c.n};}
+ if(K==="inv"){const c=fixedRoot==null?rnd(deck.set):deck.set[0],invs=c.v.length===3?INV3:INV4;
+  const allow=[];invs.forEach((o,ix)=>{if(deck.opts.some(x=>x.k===o.k))allow.push(ix);});
+  if(!allow.length)allow.push(0);
+  let i=force?invs.map(o=>o.k).indexOf(force):rnd(allow);
+  if(i<0||allow.indexOf(i)<0)i=rnd(allow);
+  const v=c.v.slice();for(let j=0;j<i;j++)v.push(v.shift()+12);
+  const sh=v[0]>12?12:0;
+  return{answer:invs[i].k,plan:{tones:v.map(o=>({m:root+o-sh,t:0,d:2.2,v:.13}))},label:c.n+" "+invs[i].n};}
+ if(K==="voicing"){const c=fixedRoot==null?rnd(SEVENTHS):SEVENTHS[0],vo=pick(deck.opts,force);
+  return{answer:vo.k,plan:{tones:vo.f(c.v.slice()).map(o=>({m:root+o,t:0,d:2.2,v:.13}))},label:vo.n};}
+ if(K==="scale"){const s=pick(deck.opts,force),seq=s.v.concat([12]);
+  let t=seq.map((o,i)=>({m:root+o,t:i*.28,d:.55}));
+  if(deck.drone)t=t.concat([{m:root-12,t:0,d:seq.length*.28+1,v:.09},{m:root-5,t:0,d:seq.length*.28+1,v:.07}]);
+  return{answer:s.k,plan:{tones:t},label:s.n};}
+ if(K==="prog"){const p=pick(deck.opts,force),bar=deck.bars||.85;
+  return{answer:p.k,plan:{tones:progTones(root,p.p,bar)},label:p.n,vizBar:bar};}
+ if(K==="root"){const m=pick(deck.opts,force),
+  q1=fixedRoot==null?rnd(["maj","min"]):"maj",q2=fixedRoot==null?rnd(["maj","min"]):"maj";
+  return{answer:m.k,plan:{tones:voice(root,0,q1,0,1.3).concat(voice(root,m.d,q2,1.0,1.6))},label:m.n};}
+ if(K==="modul"){const m=pick(deck.opts,force);
+  const a=[[0,"maj"],[7,"maj"],[0,"maj"]];
+  const b=m.minor?[[0,"min"],[7,"maj"],[0,"min"]]:[[0,"maj"],[7,"maj"],[0,"maj"]];
+  let t=progTones(root,a,.75);
+  b.forEach((c,i)=>{t=t.concat(voice(root+m.d,c[0],c[1],2.4+i*.75,.85));});
+  return{answer:m.k,plan:{tones:t},label:m.n,vizBar:.75,vizTimes:[0,.75,1.5,2.4,3.15,3.9]};}
+ if(K==="subdiv"){const s=pick(deck.opts,force),bpm=fixedRoot==null?rint(60,84):72,beat=60/bpm;let cl=[];
+  for(let b=0;b<4;b++)for(let i=0;i<s.n_;i++)
+   cl.push({t:b*beat+i*beat/s.n_,f:i===0?1400:900,v:i===0?.2:.11});
+  return{answer:s.k,plan:{clicks:cl},label:s.n};}
+ if(K==="metre"){const m=pick(deck.opts,force),beat=60/(fixedRoot==null?rint(84,110):96);let cl=[];
+  for(let r=0;r<3;r++)for(let b=0;b<m.b;b++)for(let i=0;i<m.sub;i++)
+   cl.push({t:(r*m.b+b)*beat+i*beat/m.sub,f:(b===0&&i===0)?1600:(i===0?1000:700),
+            v:(b===0&&i===0)?.22:(i===0?.13:.07)});
+  return{answer:m.k,plan:{clicks:cl},label:m.n};}
+ if(K==="feel"){const f=pick(deck.opts,force),beat=60/(fixedRoot==null?rint(80,104):92);let cl=[];
+  for(let b=0;b<6;b++){cl.push({t:b*beat,f:1400,v:.2});
+   if(f.div===2)cl.push({t:b*beat+beat*f.sw,f:900,v:.12});
+   else for(let i=1;i<4;i++)cl.push({t:b*beat+i*beat/4,f:900,v:.1});}
+  return{answer:f.k,plan:{clicks:cl},label:f.n};}
+ if(K==="poly"){const p=pick(deck.opts,force),span=2.0;let cl=[];
+  for(let r=0;r<3;r++){for(let i=0;i<p.a;i++)cl.push({t:r*span+i*span/p.a,f:1500,v:.15});
+   for(let i=0;i<p.b;i++)cl.push({t:r*span+i*span/p.b,f:700,v:.15});}
+  return{answer:p.k,plan:{clicks:cl},label:p.n};}
+ if(K==="tempo"){const t0=pick(deck.opts,force),bpm=fixedRoot==null?rint(t0.lo,t0.hi):Math.round((t0.lo+t0.hi)/2),beat=60/bpm;let cl=[];
+  for(let b=0;b<10;b++)cl.push({t:b*beat,f:b%4===0?1400:1000,v:b%4===0?.19:.12});
+  return{answer:t0.k,plan:{clicks:cl},label:bpm+" bpm"};}
+ if(K==="eqband"){const b=pick(deck.opts,force);
+  return{answer:b.k,plan:{noise:[{t:0,d:1.3,type:"peaking",f:b.f,g:0,q:4},
+   {t:1.5,d:1.6,type:"peaking",f:b.f,g:13,q:4}]},label:b.n,vizFreq:b.f};}
+ if(K==="eqtype"){const t0=pick(deck.opts,force),f=fixedRoot==null?rnd([200,600,1500,4000]):1000;
+  return{answer:t0.k,plan:{noise:[{t:0,d:1.2,type:"peaking",f:f,g:0,q:1},
+   {t:1.4,d:1.8,type:t0.t,f:f,g:t0.g,q:1}]},label:t0.n};}
+ const qq=pick(deck.opts,force),f2=fixedRoot==null?rnd([300,800,2000,5000]):1000;
+ return{answer:qq.k,plan:{noise:[{t:0,d:1.2,type:"peaking",f:f2,g:0,q:qq.q},
+  {t:1.4,d:1.8,type:"peaking",f:f2,g:13,q:qq.q}]},label:qq.n};
+}
+/* ============================ VISUALISATION ============================= */
+const WHITE_PC=[0,2,4,5,7,9,11];
+const isWhite=pc=>WHITE_PC.indexOf(pc)>-1;
+const PCNAME=["C","","D","","E","F","","G","","A","","B"];
+
+/* Which visual a deck gets */
+function vizKind(deck){
+ const k=deck.kind;
+ if(k==="prog"||k==="modul")return "strip";
+ if(k==="subdiv"||k==="metre"||k==="feel"||k==="poly"||k==="tempo"||k==="bars"||k==="chordlen")return "beats";
+ if(k==="tune")return null;
+ if(k==="eqband")return "eq";
+ if(k==="eqtype"||k==="eqq")return null;
+ return "piano";
+}
+
+/* --- piano ------------------------------------------------------------- */
+function pianoHTML(tones){
+ if(!tones.length)return"";
+ let lo=Math.min.apply(null,tones.map(t=>t.m)),hi=Math.max.apply(null,tones.map(t=>t.m));
+ lo=Math.floor((lo-1)/12)*12; hi=Math.ceil((hi+2)/12)*12-1;
+ while(hi-lo>47)hi-=12;
+ if(hi-lo<23)hi=lo+23;
+ const W=26,H=104,BW=16,BH=64;
+ const whites=[],blacks=[];let x=0;
+ for(let m=lo;m<=hi;m++){const pc=((m%12)+12)%12;
+  if(isWhite(pc)){whites.push({m:m,x:x,pc:pc});x+=W;}
+  else blacks.push({m:m,x:x-BW/2});}
+ const total=x;
+ /* order numbers only when the notes are spread in time */
+ const times=tones.map(t=>t.t).filter((v,i,a)=>a.indexOf(v)===i).sort((a,b)=>a-b);
+ const melodic=times.length>1&&times.length<=13;
+ const info={};tones.forEach(t=>{info[t.m]={t:t.t,d:t.d||1,
+  n:melodic?times.indexOf(t.t)+1:0};});
+ let s='<svg class="piano" viewBox="0 0 '+total+' '+H+'" preserveAspectRatio="xMidYMid meet">';
+ whites.forEach(k=>{const a=info[k.m];
+  s+='<rect class="wk'+(a?" act":"")+'" x="'+k.x+'" y="0" width="'+(W-1.5)+'" height="'+H+
+   '" rx="2"'+(a?' data-t="'+a.t+'" data-d="'+a.d+'"':"")+'/>';
+  if(k.pc===0)s+='<text class="oct" x="'+(k.x+W/2-0.75)+'" y="'+(H-7)+'">C'+
+   (Math.floor(k.m/12)-1)+'</text>';
+  if(a&&a.n)s+='<text class="ord" x="'+(k.x+W/2-0.75)+'" y="'+(H-26)+'">'+a.n+'</text>';});
+ blacks.forEach(k=>{const a=info[k.m];
+  s+='<rect class="bk'+(a?" act":"")+'" x="'+k.x+'" y="0" width="'+BW+'" height="'+BH+
+   '" rx="2"'+(a?' data-t="'+a.t+'" data-d="'+a.d+'"':"")+'/>';
+  if(a&&a.n)s+='<text class="ordb" x="'+(k.x+BW/2)+'" y="'+(BH-8)+'">'+a.n+'</text>';});
+ return s+'</svg>';
+}
+
+/* --- chord strip ------------------------------------------------------- */
+function stripHTML(labels,bar,times){
+ let s='<div class="strip'+(labels.length>6?" wrap":"")+'">';
+ labels.forEach((l,i)=>{const t=times?times[i]:i*bar;
+  s+='<span class="chip2" data-t="'+t+'" data-d="'+bar+'">'+l+'</span>';});
+ return s+'</div>';
+}
+
+/* --- beat grid --------------------------------------------------------- */
+function beatsHTML(clicks){
+ const rows=[];clicks.forEach(c=>{if(rows.indexOf(c.f)<0)rows.push(c.f);});
+ rows.sort((a,b)=>b-a);
+ const span=Math.max.apply(null,clicks.map(c=>c.t))||1;
+ let s='<div class="beats">';
+ rows.forEach(f=>{s+='<div class="brow">';
+  clicks.filter(c=>c.f===f).forEach(c=>{
+   const big=c.v>=.18?" big":(c.v>=.12?" mid":"");
+   s+='<i class="dot'+big+'" style="left:'+(c.t/span*97)+'%" data-t="'+c.t+'" data-d="0.14"></i>';});
+  s+='</div>';});
+ return s+'</div>';
+}
+
+/* --- eq bands ---------------------------------------------------------- */
+function eqHTML(freq){
+ let s='<div class="eqbands">';
+ EQBAND.forEach(b=>{s+='<span class="eqb'+(b.f===freq?" act":"")+'"><i></i><em>'+
+  b.n.replace(" Hz","").replace(" kHz","k")+'</em></span>';});
+ return s+'</div>';
+}
+
+/* --- dispatcher -------------------------------------------------------- */
+function vizHTML(deck,q){
+ const kind=vizKind(deck);if(!kind)return"";
+ if(kind==="piano")return '<div class="viz">'+pianoHTML(q.plan.tones||[])+'</div>';
+ if(kind==="beats")return '<div class="viz">'+beatsHTML(q.plan.clicks||[])+'</div>';
+ if(kind==="eq")return '<div class="viz">'+eqHTML(q.vizFreq)+'</div>';
+ if(kind==="strip"){
+  const opt=deck.opts.filter(o=>o.k===q.answer)[0];
+  const lab=deck.kind==="modul"?MODUL_LAB:(opt.lab||[]);
+  if(!lab.length)return"";
+  return '<div class="viz">'+stripHTML(lab,q.vizBar||0.85,q.vizTimes)+'</div>';}
+ return"";
+}
+
+/* --- playback sync ------------------------------------------------------ */
+let vizTimers=[];
+function clearViz(){vizTimers.forEach(clearTimeout);vizTimers=[];
+ document.querySelectorAll(".live").forEach(n=>n.classList.remove("live"));}
+function scheduleViz(){clearViz();
+ document.querySelectorAll("[data-t]").forEach(n=>{
+  const t=parseFloat(n.dataset.t)*1000,d=parseFloat(n.dataset.d||0.6)*1000;
+  vizTimers.push(setTimeout(()=>n.classList.add("live"),t));
+  vizTimers.push(setTimeout(()=>n.classList.remove("live"),t+Math.min(d,1400)));});}
+/* ================================ LEARN ================================= */
+const LETTERS=["C","D","E","F","G","A","B"];
+const LPC=[0,2,4,5,7,9,11];
+const SHARPS=["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
+const ROOTS=[
+ {pc:0,l:0,a:0,n:"C"},{pc:1,l:1,a:-1,n:"D\u266d"},{pc:2,l:1,a:0,n:"D"},
+ {pc:3,l:2,a:-1,n:"E\u266d"},{pc:4,l:2,a:0,n:"E"},{pc:5,l:3,a:0,n:"F"},
+ {pc:6,l:3,a:1,n:"F\u266f"},{pc:7,l:4,a:0,n:"G"},{pc:8,l:5,a:-1,n:"A\u266d"},
+ {pc:9,l:5,a:0,n:"A"},{pc:10,l:6,a:-1,n:"B\u266d"},{pc:11,l:6,a:0,n:"B"}];
+function accStr(a){return a===0?"":a===1?"\u266f":a===-1?"\u266d":a===2?"\u266f\u266f":
+ a===-2?"\u266d\u266d":(a>0?"+"+a:String(a));}
+/* Spell one note: root letter/accidental + semitone offset + letter step */
+function spell(root,off,step){
+ const li=root.l+step, letter=LETTERS[((li%7)+7)%7];
+ const nat=LPC[((li%7)+7)%7]+12*Math.floor(li/7);
+ const want=LPC[root.l]+root.a+off;
+ let acc=want-nat;
+ while(acc>3)acc-=12; while(acc<-3)acc+=12;
+ return letter+accStr(acc);
+}
+function spellSet(root,vs,ls){
+ if(!ls)return vs.map(o=>SHARPS[((root.pc+o)%12+12)%12]);
+ return vs.map((o,i)=>spell(root,o,ls[i]));
+}
+/* Degree spelling relative to the major scale */
+const MAJREF=[0,2,4,5,7,9,11,12,14,16,17,19,21,23];
+function degrees(vs,ls){
+ return vs.map((o,i)=>{const st=ls?ls[i]:i;
+  const d=o-MAJREF[st%14]-12*Math.floor(st/14)*0;
+  const num=(st%7)+1+(st>=7?7:0);
+  return accStr(d)+(st>=7?num:(st%7)+1);});
+}
+/* Interval name from a semitone count */
+const IVNAME=["unison","minor 2nd","major 2nd","minor 3rd","major 3rd","perfect 4th",
+ "tritone","perfect 5th","minor 6th","major 6th","minor 7th","major 7th","octave",
+ "minor 9th","major 9th","minor 10th","major 10th","perfect 11th","aug 11th","perfect 12th",
+ "minor 13th","major 13th","minor 14th","major 14th"];
+/* Step pattern for a scale */
+function steps(vs){
+ const out=[];const full=vs.concat([12]);
+ for(let i=1;i<full.length;i++){const d=full[i]-full[i-1];
+  out.push(d===1?"H":d===2?"W":d===3?"A":d+"s");}
+ return out.join(" ");
+}
+/* Chord quality from a set of intervals */
+const QNAME={"0,4,7":"","0,3,7":"m","0,3,6":"\u00b0","0,4,8":"+","0,2,7":"sus2","0,5,7":"sus4",
+ "0,4,7,11":"maj7","0,4,7,10":"7","0,3,7,10":"m7","0,3,6,10":"m7\u266d5","0,3,6,9":"\u00b07",
+ "0,3,7,11":"mMaj7","0,4,8,10":"7\u266f5","0,4,8,11":"maj7\u266f5","0,5,7,10":"7sus4",
+ "0,2,6,9":"?","0,4,7,9":"6","0,3,7,9":"m6"};
+function qualityOf(iv){return QNAME[iv.join(",")];}
+/* Chords built on each degree of a 7-note scale */
+function diatonic(vs,size){
+ if(vs.length!==7)return null;
+ const out=[];
+ for(let i=0;i<7;i++){
+  const pick=[];for(let j=0;j<size;j++){const idx=i+j*2;
+   pick.push(vs[idx%7]+12*Math.floor(idx/7));}
+  const iv=pick.map(p=>p-pick[0]).map(x=>((x%12)+12)%12).sort((a,b)=>a-b);
+  out.push(qualityOf(iv));}
+ return out;
+}
+const ROMAN=["I","II","III","IV","V","VI","VII"];
+function roman(q,i,acc){
+ if(q===undefined||q===null)return "?";
+ const dim=q.charAt(0)==="\u00b0"||q.indexOf("\u266d5")>-1;
+ const minorish=q.charAt(0)==="m"||dim;
+ let r=(acc||"")+(minorish?ROMAN[i].toLowerCase():ROMAN[i]);
+ if(dim)r+="\u00b0";else if(q.charAt(0)==="+")r+="+";
+ return r;
+}
+
+/* --------------------------- written character --------------------------- */
+const DESC={
+"pr:b4":"Four bars. The shortest section that still feels like a section rather than a fragment.",
+"pr:b8":"Eight bars. The commonest phrase length in popular music: a verse, a chorus, or half of either.",
+"pr:b12":"Twelve bars. Almost always the blues, and the length itself is the giveaway before you hear a single chord.",
+"pr:b16":"Sixteen bars. Long enough that you have to count in groups rather than one bar at a time.",
+"pr:c1":"One bar per chord. The busiest common rate, and it makes a progression feel like it is moving.",
+"pr:c2":"Two bars per chord. Half the movement, twice the space. Rock and metal sit here constantly.",
+"pr:c4":"Four bars per chord. Almost static. A riff or a modal vamp rather than a progression.",
+"pr:t0":"In tune. Two identical pitches fuse into one thicker sound with no waver in it.",
+"pr:tsh":"Sharp. The second note is above the first, and the two beat against each other. Baione's instruction is to listen for the beats rather than the pitch: keep adjusting until the waves disappear.",
+"pr:tfl":"Flat. The same beating, from the other side. Which direction it is off is harder to hear than that it is off at all.",
+"ch:close":"Close position: every chord member inside a single octave. Berklee treats this as separate from inversion, since the bass note decides the inversion regardless of spacing.",
+"ch:open":"Open position: the chord members spread over more than one octave. Same chord, same inversion, wider sound.",
+"iv:do":"The tonic. Home, and the note every other degree is measured against.",
+"iv:ra":"Flat 2nd. A semitone above the tonic, so it leans hard back down onto it. The Phrygian colour.",
+"iv:re":"2nd. A whole step above the tonic, stable enough to sit on but still clearly not home.",
+"iv:me":"Flat 3rd. The note that makes the key minor. Everything dark in a key runs through this one.",
+"iv:mi":"3rd. The note that makes the key major. Bright and immediately recognisable against the tonic.",
+"iv:fa":"4th. Stable but restless, and it tends to fall a semitone onto the 3rd.",
+"iv:fi":"Sharp 4th. A tritone above the tonic. The Lydian note, and the least settled degree in the scale.",
+"iv:sol":"5th. The strongest note after the tonic itself, and the note a key is built around.",
+"iv:le":"Flat 6th. The minor key's 6th. Heavier than the natural 6th, and the source of the flat-VI chord.",
+"iv:la":"6th. The major key's 6th, and also the tonic of the relative minor.",
+"iv:te":"Flat 7th. A whole step below the tonic, so it has no pull home. Mixolydian and natural minor both use it.",
+"iv:ti":"7th. The leading tone, a semitone below the tonic, with the strongest pull of any degree.",
+"iv:m9i":"Minor 9th. A minor 2nd plus an octave. The octave takes the edge off but the clash is still there.",
+"iv:M9i":"Major 9th. A major 2nd plus an octave, and the most commonly added extension on a chord.",
+"iv:m10":"Minor 10th. A minor 3rd plus an octave, which is how a minor chord sounds when it is spread out.",
+"iv:M10":"Major 10th. A major 3rd plus an octave. Guitarists use this shape constantly for open voicings.",
+"iv:P11":"Perfect 11th. A perfect 4th plus an octave. Against a major chord it clashes with the 3rd.",
+"iv:a11":"Augmented 11th. A tritone plus an octave. The Lydian dominant sound, and it does not clash.",
+"iv:P12":"Perfect 12th. A perfect 5th plus an octave, so it is as consonant as the 5th itself.",
+"iv:m13":"Minor 13th. A minor 6th plus an octave, normally written flat 13 on an altered dominant.",
+"iv:M13":"Major 13th. A major 6th plus an octave, and the top note of a 13th chord.",
+"iv:m14":"Minor 14th. A minor 7th plus an octave. At this width you are hearing two separate registers.",
+"iv:M14":"Major 14th. A major 7th plus an octave, one semitone short of a double octave.",
+"ch:r":"Root position, the root in the bass. Berklee's rule is that a chord counts as root position as long as the root is the bass, however the notes above it are arranged.",
+"ch:1":"1st inversion, the 3rd in the bass. Lighter than root position, and the usual way to keep a bass line stepping while the chord stays put.",
+"ch:2":"2nd inversion, the 5th in the bass. Murray Brown says it needs care: it works best at a cadence, where it is called the cadential six-four.",
+"ch:3":"3rd inversion, the 7th in the bass, sitting a step below the root. It leans downward and nearly always resolves that way.",
+"pr:d5":"Down a 5th. The strongest root motion in tonal music, and the move the circle of fifths is built from.",
+"pr:u5":"Up a 5th. The same distance travelled the other way. Sounds like opening outward rather than arriving.",
+"pr:u2":"Up a 2nd. Stepwise and forward-leaning. IV to V is the everyday case.",
+"pr:d2":"Down a 2nd. Stepwise and falling, as in the flat 7 to flat 6 move in a minor key.",
+"pr:u3":"Up a 3rd. The two chords share two notes, so it sounds smooth and slightly sideways.",
+"pr:d3":"Down a 3rd. The two chords share two notes, which is why it is the smoothest move in a major key.",
+"pr:tt":"Tritone. No shared notes and no diatonic explanation, so it never sounds accidental.",
+"pr:semi":"Up a semitone. The abrupt lift used for a final chorus. No pivot chord, no preparation, just a shove.",
+"pr:dom":"To the dominant. Ligon observes that modulations in most tonal music rarely move further than one accidental up or down, which makes this the commonest of all.",
+"pr:rel":"To the relative minor. Identical key signature, new tonic. Nothing changes except which note feels like home.",
+"pr:par":"To the parallel minor. Same tonic, three notes lowered. A change of colour rather than a change of centre.",
+"pr:med":"Chromatic mediant. A 3rd away, sharing a note but with no key relationship. Cinematic, and common in metal.",
+"iv:m2":"The tightest dissonance there is, two adjacent keys. Inverted it becomes a major 7th, because a minor interval inverted becomes major and a 2nd inverted becomes a 7th.",
+"iv:M2":"A single whole step, the gap between the first two notes of any major scale. Inverts to a minor 7th.",
+"iv:m3":"The interval that makes a chord minor. Dark but stable, not tense. Inverts to a major 6th.",
+"iv:M3":"The interval that makes a chord major. Bright and immediately recognisable. Inverts to a minor 6th.",
+"iv:P4":"Stable but hanging, and it tends to fall onto a 3rd. A perfect interval inverted stays perfect, so this becomes a 5th.",
+"iv:TT":"Exactly half an octave, so it is the only interval that inverts into itself. Ligon defines dissonance as instability within the harmonic frame rather than ugliness, and this is the least stable interval there is. It drives every dominant 7th.",
+"iv:P5":"The most consonant interval after the octave, and the note a key is built around. The power chord.",
+"iv:m6":"An inverted major 3rd. Yearning rather than dark.",
+"iv:M6":"An inverted minor 3rd. Warm, wide, slightly wistful.",
+"iv:m7":"An inverted major 2nd. Mild tension, and the note that makes a dominant chord move.",
+"iv:M7":"An inverted minor 2nd, stretched across an octave, so it glows rather than grates.",
+"iv:P8":"The same note twice. If it sounds like one pitch thickened, that is what you are hearing.",
+"ch:maj":"Root, major 3rd, perfect 5th. Berklee describes it two ways: a major 3rd with a perfect 5th above the root, or a major 3rd sitting below a minor 3rd.",
+"ch:min":"A major triad with the 3rd lowered by a half step. The root and 5th do not move, so the intervals reverse: minor 3rd below, major 3rd above.",
+"ch:dim":"Two stacked minor 3rds. Unstable, actively pulling somewhere.",
+"ch:aug":"Two stacked major 3rds, symmetrical and weightless with no clear root. Murray Brown notes augmented intervals are avoided in a single voice because they are hard to sing in tune, while diminished ones may be used freely so long as the line steps back inside the leap.",
+"ch:sus2":"The 3rd replaced by the 2nd. Open and unresolved, neither major nor minor.",
+"ch:sus4":"The 3rd replaced by the 4th. The classic pre-resolution hang.",
+"ch:maj7":"Root, 3rd, 5th and the 7th of the major scale. Lush and settled: nothing needs to happen next.",
+"ch:dom7":"A maj7 with the 7th lowered a half step. The 3rd and 7th now form a tritone, and Ligon gives what that tritone does: the seventh falls to the third of the next chord.",
+"ch:min7":"A dominant 7 with the 3rd lowered a half step. Soft and neutral, the default jazz minor.",
+"ch:mMaj7":"A minor triad carrying the natural 7th, drawn from harmonic minor. Sharp, cinematic, faintly sinister.",
+"ch:m7b5":"A minor 7 with the 5th lowered a half step. Berklee also calls it the half-diminished, and it is the ii chord of a minor key.",
+"ch:dim7":"A m7 flat 5 with the 7th lowered again, giving four evenly spaced minor 3rds. Berklee notes the 7th has now been lowered twice, so it is usually written as its enharmonic equivalent to avoid a double flat.",
+"ch:7sus4":"A dominant with the 3rd swapped for the 4th. Movement without the bite.",
+"ch:aug7":"A dominant with a raised 5th, giving the whole-tone flavour of an altered dominant.",
+"ch:maj7s5":"A major 7th with a raised 5th. Lydian augmented in chord form.",
+"ch:6":"Major triad plus the 6th. Older and more settled than a maj7.",
+"ch:m6":"Minor triad plus a natural 6th. Contains a tritone, so it leans forward.",
+"ch:69":"Major triad with 6th and 9th, no 7th. Wide and modern.",
+"ch:add9":"Triad plus a 9th with no 7th between them. Bright, uncluttered.",
+"ch:maj9":"Maj7 with the 9th on top. The most opulent stable chord in common use.",
+"ch:9":"Dominant 7th plus the 9th. Blues and funk in one chord.",
+"ch:m9":"Minor 7th plus the 9th. Smooth, unhurried.",
+"ch:13":"Dominant with the 13th. The 13th is a major 6th an octave up.",
+"ch:m11":"Minor 7th with the 11th. Nearly quartal, close to a stack of 4ths.",
+"ch:7b9":"Dominant with a flattened 9th. Contains a hidden diminished 7th.",
+"ch:7s9":"Dominant with a raised 9th, which is a minor 3rd against a major 3rd.",
+"ch:7s11":"Dominant with a raised 11th. The Lydian dominant sound.",
+"sc:ion":"The reference scale. Carter's point is that every other scale and mode is described as a deviation from this one, which is why it is worth knowing cold.",
+"sc:dor":"Minor with a raised 6th. Minor without the sadness. The rock and funk minor.",
+"sc:phr":"Minor with a flattened 2nd. That semitone at the bottom is the whole character.",
+"sc:lyd":"Major with a raised 4th. Brighter than major. Weightless, floating.",
+"sc:mix":"Major with a flattened 7th. Major that will not resolve. The dominant scale.",
+"sc:aeo":"Natural minor: flat 3rd, flat 6th and flat 7th, and no leading tone.",
+"sc:loc":"Minor with a flat 2nd and flat 5th. No stable tonic. The darkest mode.",
+"sc:mm":"Natural minor with a raised 6th and 7th, ascending and descending alike.",
+"sc:dorb2":"Second mode of melodic minor. Phrygian with a raised 6th.",
+"sc:lydaug":"Third mode. Lydian with a raised 5th. Everything pulled upward.",
+"sc:lyddom":"Fourth mode. Raised 4th and flat 7th together. The overtone scale.",
+"sc:mixb6":"Fifth mode. Mixolydian darkened at the 6th. The Hindu scale.",
+"sc:loc2":"Sixth mode. Locrian with a natural 2nd. The half-diminished scale.",
+"sc:alt":"Seventh mode. Every extension altered. Maximum dominant tension.",
+"sc:hm":"Natural minor with the 7th raised. Ligon gives the reason plainly: the raised leading tone is what makes the chord on the fifth degree a dominant, so the key can cadence properly.",
+"sc:loc6":"Second mode of harmonic minor. Locrian with a natural 6th.",
+"sc:ion5":"Third mode. Major with a raised 5th. Unstable major.",
+"sc:dor4":"Fourth mode. Dorian with a raised 4th. Eastern European folk colour.",
+"sc:phrdom":"The fifth mode of harmonic minor. Carter calls it Phrygian #3, which says it more directly: Phrygian with the 3rd raised. Flamenco and metal both live here.",
+"sc:lyd2":"Sixth mode. Lydian with a raised 2nd. Exotic and rarely sits still.",
+"sc:altdim":"Seventh mode. The scale of the diminished 7th chord in a minor key.",
+"sc:majp":"The major scale with the 4th and 7th removed. Carter's explanation is that pentatonics exist to strip out the semitone clashes, so nothing in the scale can grate against anything else.",
+"sc:minp":"The same five notes as the major pentatonic, started from the 6th degree. The foundation of rock lead playing.",
+"sc:blues":"Minor pentatonic with a lowered 5th added as a passing note between the 4th and the 5th.",
+"sc:hira":"Japanese pentatonic with two semitones. Sparse and severe.",
+"sc:insen":"Japanese pentatonic built from the flat 2nd. Very dark for five notes.",
+"sc:kumoi":"Japanese pentatonic with a major 2nd and minor 3rd. Bittersweet.",
+"sc:egy":"Suspended pentatonic. All 2nds and 4ths, no 3rd, so no clear quality.",
+"sc:wt":"Six notes a whole tone apart. Perfectly symmetrical, no leading tone, no gravity.",
+"sc:hw":"Alternating half and whole steps. The scale of the 7\u266d9 chord.",
+"sc:wh":"Alternating whole and half steps. The scale of the diminished 7th chord.",
+"sc:augsc":"Alternating minor 3rds and semitones. Two augmented triads interlocked.",
+"sc:chrom":"All twelve notes. No tonic, no hierarchy, pure semitone motion.",
+"pr:pac":"Dominant to tonic, V-I, both in root position. Murray Brown lists it first of the four principal cadences and calls it the strongest ending available.",
+"pr:plag":"Subdominant to tonic, IV-I. No leading tone, so it settles rather than arrives. The amen cadence.",
+"pr:half":"Any progression that stops on the dominant. Murray Brown's term is the imperfect cadence: a comma, not a full stop.",
+"pr:dec":"The dominant resolves to vi instead of I. Murray Brown calls it the interrupted cadence, which describes exactly what it does to the expectation.",
+"pr:phry":"A minor-key half cadence with a descending bass. Spanish and metal alike.",
+"pr:1451":"The three primary triads. Every function in the key, in order.",
+"pr:1645":"Tonic, relative minor, then subdominant to dominant. The doo-wop turnaround.",
+"pr:1564":"The four chords behind an enormous number of pop songs.",
+"pr:6415":"The same four chords starting on the minor. Sounds sadder, is identical.",
+"pr:251":"The engine of jazz harmony. Subdominant, dominant, tonic in three moves.",
+"pr:1345":"Stepwise rise from tonic through the mediant. Gentle lift.",
+"pr:1415":"Tonic and subdominant alternating, then dominant. Blues-adjacent.",
+"pr:circ":"Roots falling by 5ths. The strongest possible chain of root motion.",
+"pr:i4v":"Minor tonic, minor subdominant, major dominant. Requires harmonic minor.",
+"pr:i637":"Natural minor with no leading tone. The rock and metal minor loop.",
+"pr:and":"Descending tetrachord from tonic to dominant. Flamenco's signature.",
+"pr:i67i":"Minor with a flat 6 and flat 7 leading home. Sabaton territory.",
+"pr:251m":"The minor two-five. Half-diminished, altered dominant, minor tonic.",
+"pr:i4i5":"Minor tonic and subdominant alternating, ending on the dominant.",
+"pr:b7":"The flat 7 borrowed from Mixolydian, and by far the most common borrowed chord in rock.",
+"pr:b6":"The flat 6 borrowed from the parallel minor. Sudden shade across a major key.",
+"pr:iv":"The minor subdominant in a major key. The saddest single substitution available.",
+"pr:b3":"The flat 3 as a major chord. Bluesy and abrupt, common in riff writing.",
+"pr:b2":"The Neapolitan. Murray Brown treats it as the Neapolitan sixth, normally used in first inversion, available in both major and minor keys, and notes the flattened 6th above the bass makes it markedly more tragic.",
+"pr:ii0":"The diminished ii borrowed from minor. Passing tension, quickly gone.",
+"pr:vv":"The dominant of the dominant. Ligon's word for what it does is tonicize: it makes the target chord briefly feel like a tonic.",
+"pr:vii":"A dominant 7th aimed at the ii chord, tonicizing it for one bar before the real ii-V.",
+"pr:vvi":"A dominant aimed at the relative minor. Very common at the end of a phrase.",
+"pr:viv":"The tonic turned into a dominant 7th so it can resolve to IV.",
+"pr:viii":"A dominant aimed at the mediant. The least common of the secondaries.",
+"pr:tsub":"The dominant replaced by a chord a tritone away. Ligon calls it the tritone substitute: the same tritone is inside both chords, so only the bass changes character.",
+"pr:b12":"Four bars of I, two of IV, two of I, then V-IV-I-V. The base form.",
+"pr:bqc":"The same twelve bars but IV arrives in bar two. Announces the form earlier.",
+"pr:bjz":"Blues rebuilt with ii-Vs and a vi chord. Same form, denser harmony.",
+"pr:bmin":"Minor blues, usually with a flat VI to V approach in bars nine and ten."
+};
+
+const LEARN=[
+ {id:"iv",n:"Intervals",t:"interval",p:"iv",items:IV},
+ {id:"tri",n:"Triads",t:"chord",p:"ch",items:TRIADS},
+ {id:"sev",n:"Seventh chords",t:"chord",p:"ch",items:SEVENTHS},
+ {id:"ext",n:"Extended and altered",t:"chord",p:"ch",items:EXT},
+ {id:"scmaj",n:"Major modes",t:"scale",p:"sc",items:MAJ_MODES},
+ {id:"scmel",n:"Melodic minor modes",t:"scale",p:"sc",items:MEL_MODES},
+ {id:"scharm",n:"Harmonic minor modes",t:"scale",p:"sc",items:HARM_MODES},
+ {id:"scpent",n:"Pentatonic and blues",t:"scale",p:"sc",items:PENTA},
+ {id:"scsym",n:"Symmetric",t:"scale",p:"sc",items:SYMM},
+ {id:"cad",n:"Cadences",t:"prog",p:"pr",items:CAD},
+ {id:"pmaj",n:"Major progressions",t:"prog",p:"pr",items:PROG_MAJ},
+ {id:"pmin",n:"Minor progressions",t:"prog",p:"pr",items:PROG_MIN},
+ {id:"borr",n:"Modal interchange",t:"prog",p:"pr",items:BORROW},
+ {id:"sec",n:"Secondary dominants",t:"prog",p:"pr",items:SECOND},
+ {id:"blu",n:"Blues forms",t:"prog",p:"pr",items:BLUES}
+];
+
+/* ------------------------------ playback -------------------------------- */
+function learnPlan(cat,item,rootPc,how){
+ const base=48+rootPc, slow=how.indexOf("slow")>-1;
+ if(cat.t==="interval"){
+  const s=item.s;
+  if(how==="down")return{tones:[{m:base+12+s,t:0,d:1.1},{m:base+12,t:.7,d:1.6}]};
+  if(how==="both")return{tones:[{m:base+12,t:0,d:2.6},{m:base+12+s,t:0,d:2.6}]};
+  return{tones:[{m:base+12,t:0,d:1.1},{m:base+12+s,t:.7,d:1.6}]};
+ }
+ if(cat.t==="chord"){
+  const v=item.v;
+  if(how==="arp")return{tones:v.map((o,i)=>({m:base+o,t:i*.34,d:1.0}))};
+  if(how==="both"){let t=v.map((o,i)=>({m:base+o,t:i*.32,d:.9}));
+   const n=v.length;v.slice().reverse().forEach((o,i)=>t.push({m:base+o,t:n*.32+i*.32,d:.9}));
+   return{tones:t};}
+  return{tones:v.map(o=>({m:base+o,t:0,d:2.6,v:.13}))};
+ }
+ if(cat.t==="scale"){
+  const g=slow?.5:.3, seq=item.v.concat([12]);
+  let t=seq.map((o,i)=>({m:base+o,t:i*g,d:g*1.9}));
+  if(how.indexOf("both")>-1){const n=seq.length;
+   seq.slice(0,-1).reverse().forEach((o,i)=>t.push({m:base+o,t:(n+i)*g,d:g*1.9}));}
+  else if(how.indexOf("down")>-1){t=seq.slice().reverse().map((o,i)=>({m:base+o,t:i*g,d:g*1.9}));}
+  return{tones:t};
+ }
+ const bar=item.p.length>6?.66:.9;
+ let t=[];item.p.forEach((c,i)=>{t=t.concat(voice(base+12,c[0],c[1],i*bar,bar*1.15));});
+ return{tones:t};
+}
+
+/* -------------------------------- views ---------------------------------- */
+function learnHTML(){
+ let h='<div class="page"><button class="x standalone" data-go="home">back</button>'+
+  '<div class="eyebrow">Learn</div><h1 class="title">Hear it built,<br>before it is tested</h1>'+
+  '<p class="sub">Pick a sound, pick a root, and it plays it and shows you how it is put together.</p>';
+ LEARN.forEach((c,ci)=>{const open=V.openCat===ci;
+  h+='<button class="modhead'+(open?" open":"")+'" data-cat="'+ci+'">'+esc(c.n)+
+   '<span>'+(open?"\u2212":"+")+'</span></button>';
+  if(!open)return;
+  h+='<div class="itemgrid">';
+  c.items.forEach(it=>{h+='<button class="itembtn" data-item="'+ci+'.'+it.k+'">'+
+   esc(it.n)+'</button>';});
+  h+='</div>';});
+ return h+'</div>';}
+
+function rootChips(pc){
+ let h='<div class="roots">';
+ ROOTS.forEach(r=>{h+='<button class="rchip'+(r.pc===pc?" on":"")+'" data-root="'+r.pc+'">'+
+  r.n+'</button>';});
+ return h+'</div>';}
+
+function factRow(l,v){return '<div class="fact"><span>'+l+'</span><b>'+v+'</b></div>';}
+
+function learnItemHTML(){
+ const cat=LEARN[V.learnCat], item=cat.items.filter(i=>i.k===V.learnKey)[0];
+ const root=ROOTS.filter(r=>r.pc===V.learnRoot)[0];
+ const d=DESC[cat.p+":"+item.k]||"";
+ const plan=learnPlan(cat,item,V.learnRoot,V.learnHow||"up");
+ let title=item.n, h='';
+
+ if(cat.t==="scale"||cat.t==="chord")title=root.n+" "+item.n;
+ if(cat.t==="interval")title=item.full||item.n;
+
+ h+='<div class="page"><button class="x standalone" data-go="learn">back</button>'+
+  '<div class="eyebrow">'+esc(cat.n)+'</div><h1 class="title">'+title+'</h1>';
+ if(d)h+='<p class="sub">'+d+'</p>';
+ if(cat.t!=="prog")h+=rootChips(V.learnRoot);
+ else h+='<p class="note keynote">In the key of '+root.n+'</p>'+rootChips(V.learnRoot);
+
+ h+='<div class="viz">'+pianoHTML(plan.tones)+'</div>';
+
+ /* transport */
+ const modes=cat.t==="interval"?[["up","Ascending"],["down","Descending"],["both","Together"]]
+  :cat.t==="chord"?[["block","Block"],["arp","Arpeggio"],["both","Up and down"]]
+  :cat.t==="scale"?[["up","Up"],["down","Down"],["both","Up and down"],["both slow","Slow"]]
+  :[["play","Play it"]];
+ h+='<div class="transport">';
+ modes.forEach(m=>{h+='<button class="tbtn'+((V.learnHow||"up")===m[0]?" on":"")+
+  '" data-how="'+m[0]+'">'+m[1]+'</button>';});
+ h+='</div>';
+
+ /* construction */
+ h+='<h2 class="group-title">How it is built</h2><div class="facts">';
+ if(cat.t==="interval"){
+  const inv=12-item.s;
+  h+=factRow("Semitones",item.s);
+  h+=factRow("Notes",spell(root,0,0)+" \u2192 "+spell(root,item.s,
+    [0,1,1,2,2,3,3,4,5,5,6,6,7][item.s]));
+  h+=factRow("Inverts to",item.s===0||item.s===12?"itself":IVNAME[inv]);
+  h+=factRow("Quality",item.s===0||item.s===5||item.s===7||item.s===12?"Perfect":
+    (item.k[0]==="M"?"Major":item.k[0]==="m"?"Minor":"Augmented / diminished"));
+ } else if(cat.t==="chord"){
+  const notes=spellSet(root,item.v,item.ls);
+  h+=factRow("Notes",notes.join("  "));
+  h+=factRow("Formula",degrees(item.v,item.ls).join("  "));
+  h+=factRow("Semitones from root",item.v.join(", "));
+  const gaps=[];for(let i=1;i<item.v.length;i++)gaps.push(IVNAME[item.v[i]-item.v[i-1]]);
+  h+=factRow("Stacked as",gaps.join(", then "));
+ } else if(cat.t==="scale"){
+  const notes=spellSet(root,item.v,item.ls);
+  h+=factRow("Notes",notes.join("  ")+"  "+notes[0]);
+  h+=factRow("Formula",degrees(item.v,item.ls).join("  "));
+  h+=factRow("Step pattern",steps(item.v));
+  h+=factRow("Note count",item.v.length);
+ } else {
+  const lab=cat.items===MODUL?MODUL_LAB:(item.lab||[]);
+  h+=factRow("Degrees",lab.join("  "));
+  const names=item.p.map(c=>{
+   const rr={l:root.l,a:root.a,pc:root.pc};
+   const nm=SHARPS[((root.pc+c[0])%12+12)%12];
+   const q=qualityOf(Q[c[1]].slice());
+   return nm+(q===undefined?"":q);});
+  h+=factRow("Chords in "+root.n,names.join("  "));
+  h+=factRow("Length",item.p.length+" chords");
+ }
+ h+='</div>';
+
+ /* diatonic harmony for seven-note scales */
+ if(cat.t==="scale"&&item.v.length===7){
+  const tri=diatonic(item.v,3), sev=diatonic(item.v,4);
+  const notes=spellSet(root,item.v,item.ls);
+  const accs=degrees(item.v,item.ls).map(d=>d.replace(/[0-9]/g,""));
+  h+='<h2 class="group-title">Chords inside it</h2><div class="dia">';
+  for(let i=0;i<7;i++){
+   h+='<div class="diarow"><span class="dnum">'+roman(tri[i],i,accs[i])+'</span>'+
+    '<span class="dname">'+notes[i]+(tri[i]===undefined?"":tri[i])+'</span>'+
+    '<span class="dsev">'+notes[i]+(sev[i]===undefined?"":sev[i])+'</span></div>';}
+  h+='</div>';}
+
+ h+='<button class="ghost wide" data-go="learn">Back to the list</button></div>';
+ return h;}
+/* =============================== THE PATH =============================== */
+/* Each step is a narrow contrast. Stats are stored under the base deck id,
+   so progress made here counts towards the full deck later. */
+const STAGES=[{n:"Major and minor",why:"Everything else is measured against this one split.",steps:[ {id:"s1a",t:"Minor 3rd vs major 3rd",l:"One semitone apart. The lower note is the same; only the top note moves.",w:"A 3rd spans two letter names. Whether it is major or minor comes down to one semitone: four semitones is major, three is minor. That single semitone decides whether a chord sounds bright or dark, and almost all of harmony is stacked on top of it.",d:"iv-asc",o:["m3", "M3"]},
+ {id:"s1b",t:"The same two, played together",l:"Both notes at once. Nothing moves in time, so you judge the colour of the blend.",w:"Played one after the other, you can measure the distance. Played together you cannot, so you are judging the quality of the blend instead. This is the harder skill and the more useful one, because chords arrive all at once.",d:"iv-harm",o:["m3", "M3"]},
+ {id:"s1c",t:"Major vs minor triad",l:"Same root, same 5th. Only the middle note changes.",w:"A triad is three notes stacked in 3rds: root, 3rd, 5th. Berklee's Book 2 defines a minor triad as a major triad with the 3rd lowered by a half step, which is exactly the difference you are listening for. The root and 5th are identical in both.",d:"tri-q",o:["maj", "min"]},
+ {id:"s1d",t:"Major vs minor arpeggios",l:"The same two chords one note at a time instead of all at once, which is harder.",w:"A chord played one note after another is an arpeggio. A blocked chord gives you one colour to judge; an arpeggio makes you track pitches in sequence, which is what you actually do when working out a riff by ear.",d:"tri-arp",o:["maj", "min"]},
+ {id:"s1e",t:"Major vs minor scale",l:"Seven notes rather than three. Listen to the 3rd and the 6th.",w:"Ionian and Aeolian contain the same seven notes: C major and A minor share a key signature. Played from the same root they differ at the 3rd, 6th and 7th, all a semitone lower in the minor.",d:"sc-maj",o:["ion", "aeo"]}]},
+{n:"The stable intervals",why:"Anchors. Once these are automatic you can measure everything else against them.",steps:[ {id:"s2a",t:"4th, 5th, octave",l:"The three consonances. Wide, hollow, no tension in any of them.",w:"The perfect intervals have the simplest frequency ratios, 2:1, 3:2 and 4:3, so they blend rather than colour. A power chord is a perfect 5th with no 3rd, which is why it stays clear under high gain: there is no 3rd to fight the harmonics.",d:"iv-asc",o:["P4", "P5", "P8"]},
+ {id:"s2b",t:"Perfects against 3rds",l:"Adding the two 3rds you already know to the three you just learned.",w:"These five give you the skeleton of every triad. Once you can place a note as a 3rd, 4th, 5th or octave above a root, most chords name themselves.",d:"iv-asc",o:["m3", "M3", "P4", "P5", "P8"]},
+ {id:"s2c",t:"2nds against 3rds",l:"The narrow end. A major 2nd and a minor 3rd are one semitone apart.",w:"A major 2nd is two semitones and a minor 3rd is three, so they sit one semitone apart. This is where most interval mistakes happen. The 2nd is a step; the 3rd is the smallest thing that sounds like a leap.",d:"iv-asc",o:["m2", "M2", "m3", "M3"]},
+ {id:"s2d",t:"6ths and 7ths",l:"The wide end, and the one most people leave until last.",w:"Carter's point about inversion is the shortcut here: every interval inverts to its complement within the octave. A minor 3rd inverted becomes a major 6th, a major 3rd becomes a minor 6th, a major 2nd becomes a minor 7th. If you know the small intervals you already half-know the wide ones.",d:"iv-asc",o:["m6", "M6", "m7", "M7"]},
+ {id:"s2e",t:"All twelve, ascending",l:"The full set. Fall back on the anchors when you are unsure.",w:"When you are unsure, measure against the anchors rather than guessing: is it wider or narrower than a 5th, above or below an octave.",d:"iv-asc"},
+ {id:"s2f",t:"All twelve, descending",l:"Harder than ascending. Different intervals become confusable.",w:"Descending intervals are genuinely harder than ascending ones, because falling shapes are less familiar and your ear anchors on the higher note first. Bass lines and vocal melodies descend constantly, so this is not optional.",d:"iv-desc"},
+ {id:"s2g",t:"All twelve, played together",l:"Every interval as a simultaneous blend rather than a melodic step.",w:"The same twelve, but harmonic rather than melodic. Consonant ones fuse into a single sound; dissonant ones beat against each other. You are now judging texture rather than distance, and this is what you do when naming the interval between two voices in a chord.",d:"iv-harm"}]},
+{n:"Tension, and the bass note",why:"The sounds that will not sit still, and what happens when the lowest note changes.",steps:[ {id:"s3a",t:"Tritone vs perfect 5th",l:"One semitone apart, but one is the most stable interval and the other the least.",w:"The tritone splits the octave exactly in half, six semitones, so it is the only interval that inverts into itself. It has no simple frequency ratio, which is why it refuses to settle next to the perfect 5th.",d:"iv-asc",o:["P5", "TT"]},
+ {id:"s3b",t:"Minor vs diminished triad",l:"Diminished is a minor triad with the 5th lowered - two minor 3rds stacked.",w:"Losing the perfect 5th removes the stable frame, and the chord leans somewhere instead of sitting still. Berklee's ear training runs exactly this pair as its second exercise, straight after major against minor.",d:"tri-q",o:["min", "dim"]},
+ {id:"s3c",t:"Major vs augmented triad",l:"Augmented is a major triad with the 5th raised - two major 3rds stacked, and no root.",w:"It is perfectly symmetrical, which means any of its notes could be the root and none of them sounds like home. Berklee runs this as its third exercise, again changing only one note from something you already know.",d:"tri-q",o:["maj", "aug"]},
+ {id:"s3d",t:"All four triad qualities",l:"Major, minor, diminished, augmented. Find the 3rd, then the 5th.",w:"All four differ only in the 3rd and the 5th. Identify the 3rd first, major or minor, then check the 5th, perfect, lowered or raised. Those two answers give you the name.",d:"tri-q",o:["maj", "min", "dim", "aug"]},
+ {id:"s3e",t:"Suspensions added",l:"Sus2 and sus4 have no 3rd at all, so they are neither major nor minor.",w:"Suspended chords replace the 3rd with the 2nd or the 4th. That ambiguity is the point: they hang, waiting for the 3rd to arrive.",d:"tri-q"},
+ {id:"s3f",t:"Root position vs 1st inversion",l:"Listen only to the lowest note. In 1st inversion the 3rd is in the bass.",w:"Berklee teaches inversions immediately after triads, before sevenths, and this app now follows that order. A chord's inversion is decided by its lowest note, never its highest: root position puts the root in the bass, 1st inversion puts the 3rd there. The notes are identical; only the foundation moved.",d:"tri-i",o:["r", "1"]},
+ {id:"s3g",t:"All three triad inversions",l:"Root, 3rd or 5th in the bass. Sing the bottom note if it helps.",w:"Inversions let a bass line walk by step while the harmony stays where it is, which is what a slash chord like C/E is doing. Murray Brown notes that the second inversion needs care: it works best at a cadence, where it is called the cadential six-four.",d:"tri-i"}]},
+{n:"Sevenths",why:"A fourth note changes the function of a chord, not just its colour.",steps:[ {id:"s4a",t:"maj7 vs dominant 7",l:"Same triad underneath. The 7th is one semitone lower on the dominant.",w:"Berklee builds all five seventh chords as a chain of single semitone drops, and this stage follows that chain. Start with maj7, which uses the 7th of the major scale, eleven semitones. Lower it to ten and you have a dominant 7: a chord that can end a song becomes one that has to move.",d:"sev-q",o:["maj7", "dom7"]},
+ {id:"s4b",t:"Dominant 7 vs m7",l:"Same flat 7th. The 3rd is what moves.",w:"Second link in the chain: lower the 3rd of a dominant 7 and you get a minor 7. In the dominant, the 3rd and the 7th are a tritone apart, and Ligon gives the mechanism that tritone drives - the seventh falls to the third of the next chord.",d:"sev-q",o:["dom7", "min7"]},
+ {id:"s4c",t:"m7 vs half-diminished",l:"Same minor 3rd and flat 7th. Only the 5th has dropped.",w:"Third link: lower the 5th of a minor 7 and you get m7 flat 5, the half-diminished. This is the pair I originally left out, and Berklee runs it as an exercise in its own right, because the flattened 5th needs isolating before it gets buried in a four-way choice.",d:"sev-q",o:["min7", "m7b5"]},
+ {id:"s4d",t:"Half-diminished vs diminished 7",l:"One more semitone drop, this time on the 7th again.",w:"Last link: lower the 7th of a m7 flat 5 and you get a diminished 7, four evenly spaced minor 3rds. Berklee makes the spelling point that the 7th has now been lowered twice, so it is often written as its enharmonic equivalent to avoid a double flat.",d:"sev-q",o:["m7b5", "dim7"]},
+ {id:"s4e",t:"The big three",l:"maj7, dominant 7, m7. Ninety per cent of the seventh chords you will meet.",w:"These are the chords built on degrees I, V and ii of a major key. An enormous amount of jazz and pop harmony is just these three moving around each other.",d:"sev-q",o:["maj7", "dom7", "min7"]},
+ {id:"s4f",t:"Six seventh qualities",l:"Adding minor-major 7, the one that sounds faintly sinister.",w:"The minor-major 7 is a minor triad carrying the natural 7th, which comes out of harmonic minor. With these six you have covered essentially every seventh chord you will meet in practice.",d:"sev-q",o:["maj7", "dom7", "min7", "m7b5", "dim7", "mMaj7"]},
+ {id:"s4g",t:"Seventh chord inversions",l:"Four positions. 3rd inversion puts the 7th in the bass and sounds unstable.",w:"A four-note chord has four possible bass notes. 3rd inversion puts the 7th at the bottom, a step below the root, and that near-collision is why it sounds unstable and nearly always falls.",d:"sev-i"}]},
+{n:"Hearing inside a key",why:"Naming a sound in isolation is one skill. Naming it against a tonic is the one you use.",steps:[ {id:"s5a",t:"Scale degrees in a major key",l:"A cadence sets the key, then one note. Name it against the tonic, not the note before.",w:"This is the skill Carter builds towards with the concept of the root note, and it is different from interval recognition. Instead of measuring one note against the previous one, you measure everything against a tonic you are holding in your head. It is how you work out a melody without a reference pitch.",d:"deg-maj"},
+ {id:"s5b",t:"Scale degrees in a minor key",l:"Same task, minor tonic. The 3rd, 6th and 7th all sit lower.",w:"The same skill in a minor context. Your reference points move, and the degrees you learned in major no longer fall where you expect, which is why this needs separate practice rather than transferring automatically.",d:"deg-min"},
+ {id:"s5c",t:"Compound intervals",l:"Wider than an octave. Reduce them to the simple interval plus an octave.",w:"A compound interval is a simple interval plus an octave: a 9th is a 2nd, an 11th is a 4th, a 13th is a 6th. Chord extensions are named this way, which is why a 13th chord contains what is really a major 6th an octave up.",d:"iv-comp"},
+ {id:"s5d",t:"Root motion",l:"How far the bass moved between two chords, ignoring their quality.",w:"Down a 5th is the strongest and most common, which is why the circle of fifths is built from it. Up a 2nd is next. Down a 3rd is the smoothest, because the two chords share two notes.",d:"root",o:["d5", "u2", "d3"]},
+ {id:"s5e",t:"All seven root motions",l:"Including the tritone, which never sounds accidental.",w:"Once you hear root motion reliably you can follow a progression without having to name every chord quality in it.",d:"root"}]},
+{n:"Modes",why:"Each mode is the major scale with one or two notes moved. Learn the moved note, not the whole scale.",steps:[ {id:"s6a",t:"Dorian vs Aeolian",l:"One note apart: the 6th. Dorian raises it, and that is the entire difference.",w:"Both are minor: lowered 3rd and lowered 7th. They part company at the 6th, which Dorian keeps natural. That single note is the whole reason Dorian sounds hopeful and Aeolian does not.",d:"sc-maj",o:["dor", "aeo"]},
+ {id:"s6b",t:"Ionian vs Lydian",l:"One note apart: the 4th. Lydian raises it and floats.",w:"Lydian is major with a raised 4th. It is the brightest of the seven modes, because every one of its notes sits at or above its position in the major scale.",d:"sc-maj",o:["ion", "lyd"]},
+ {id:"s6c",t:"Ionian vs Mixolydian",l:"One note apart: the 7th. Mixolydian lowers it and stops resolving.",w:"Taking away the leading tone takes away the pull home, which is why Mixolydian suits riffs that circle rather than resolve.",d:"sc-maj",o:["ion", "mix"]},
+ {id:"s6d",t:"Phrygian vs Aeolian",l:"One note apart: the 2nd. Phrygian lowers it, and that semitone is the whole flavour.",w:"That semitone immediately above the root is the darkest interval in common use, and it is why Phrygian turns up everywhere in metal.",d:"sc-maj",o:["phr", "aeo"]},
+ {id:"s6e",t:"All seven major modes",l:"Order them by brightness: Lydian, Ionian, Mixolydian, Dorian, Aeolian, Phrygian, Locrian.",w:"Each step down that list lowers exactly one more note. Worth flagging: this brightness ordering is a common teaching device but it does not appear in any of your books, so treat it as a useful mental model rather than a sourced fact.",d:"sc-maj"},
+ {id:"s6f",t:"Harmonic minor vs Phrygian dominant",l:"Same seven notes, different starting point. You already know harmonic minor.",w:"Phrygian dominant is the fifth mode of harmonic minor. Carter names it Phrygian #3, which says the same thing more plainly: it is Phrygian with the 3rd raised. A harmonic minor and E Phrygian dominant contain identical pitches; only the note that feels like home has changed.",d:"sc-harm",o:["hm", "phrdom"]},
+ {id:"s6g",t:"Pentatonic and blues",l:"Fewer notes, so the gaps are the identifying feature.",w:"Carter is explicit that pentatonics exist to remove the semitone clashes from the diatonic scale: two notes are omitted, and what is left cannot clash. Minor pentatonic is the same five notes as major pentatonic started from the 6th degree. The blues scale adds a lowered 5th as a passing note.",d:"sc-pent",o:["majp", "minp", "blues"]}]},
+{n:"Movement",why:"Where chords go, not just what they are. This is the stage that answers key-change questions.",steps:[ {id:"s7a",t:"Perfect vs plagal cadence",l:"V to I against IV to I. One has a leading tone, the other does not.",w:"A cadence is how a phrase ends. V to I carries a leading tone that rises a semitone into the tonic, which is why it sounds like arrival. Murray Brown notes the raised 7th in harmonic minor exists precisely to supply that leading tone.",d:"cad",o:["pac", "plag"]},
+ {id:"s7b",t:"All five cadences",l:"Including the deceptive, which resolves to the wrong chord on purpose.",w:"Five ways to end a phrase. The deceptive cadence resolves the dominant to vi instead of I: the chord you were promised, withheld.",d:"cad"},
+ {id:"s7c",t:"The four common progressions",l:"Same four chords in different orders. Listen to where the minor chord falls.",w:"Where the minor chord falls in the loop changes the emotional weight completely, even though the harmony is identical.",d:"pr-maj",o:["1451", "1645", "1564", "6415"]},
+ {id:"s7d",t:"Minor progressions",l:"Including the flat-6 flat-7 loop most metal is built on.",w:"Natural minor has no leading tone, so these progressions circle rather than resolve, which is what makes them loop so comfortably under a riff.",d:"pr-min"},
+ {id:"s7e",t:"Modal interchange",l:"A chord borrowed from the parallel minor. The flat 7 first, it is everywhere.",w:"Modal interchange borrows a chord from the parallel minor without leaving the major key. A minor iv in a major key is probably the saddest single substitution available to you.",d:"borrow",o:["b7", "b6", "iv"]},
+ {id:"s7f",t:"All borrowed chords",l:"Including the Neapolitan, a major chord on the flat 2nd.",w:"The full set. The Neapolitan is built on the lowered 2nd and almost always heads for the dominant.",d:"borrow"},
+ {id:"s7g",t:"Secondary dominants",l:"A dominant 7th aimed at a chord that is not the tonic.",w:"A key change lasting one chord. In C, V of V is D7, and it pulls to G exactly as G7 pulls to C. Ligon's outlines are built on this: the seventh of each chord falling to the third of the next.",d:"secd"},
+ {id:"s7h",t:"Modulation",l:"Two keys, back to back. Name the distance between them.",w:"Modulation is a change of key centre. Name the distance: up a semitone, to the dominant, to the relative or parallel minor, or a chromatic mediant. This is the ear behind hearing how a song moves between keys, and the last skill you need before you can work out how a piece bridges one key to another.",d:"modul"}]},
+{n:"Naming the notes",why:"Knowing what a sound is called, not only what it sounds like. Do these anywhere; no headphones needed.",steps:[
+ {id:"s8a",t:"3rds above a note",l:"No listening required. Name the note a 3rd above the one given.",w:"This is spelling rather than hearing, and it is the other half of knowing an interval. A major 3rd above E flat is G; a minor 3rd above E flat is G flat. The sound plays after you answer so the name and the sound attach to each other.",d:"nm-3rd"},
+ {id:"s8b",t:"Anchors above a note",l:"The 3rds you know plus the perfect intervals, from any starting note.",w:"The same five intervals you learned as anchors by ear, now as spellings. Being able to name a 5th above any note is what lets you work out a chord on the fretboard without counting frets one at a time.",d:"nm-anch"},
+ {id:"s8c",t:"Any interval above a note",l:"All twelve, from any of the twelve starting notes.",w:"One hundred and forty-four combinations. This is the drill that makes the fretboard arithmetic automatic, and it is worth doing away from the guitar so you are recalling rather than counting.",d:"nm-up"},
+ {id:"s8d",t:"Any interval below a note",l:"The same again downwards, which is much harder.",w:"Downward spelling is the weak side for almost everyone, and it is what you need when working out a bass line or voicing a chord under a melody note. Murray Brown's inversion rule is the shortcut: a 5th below is the same note as a 4th above, an octave down.",d:"nm-dn"},
+ {id:"s8e",t:"Chord tones",l:"Name the 3rd, 5th or 7th of a named chord.",w:"The last step from spelling to playing. If you can name the 7th of an A flat dominant chord without working up from the root, you can find it on the neck. The chord sounds as you answer, with the target note brought forward in the arpeggio.",d:"nm-ch"}]},
+{n:"Form and time",why:"Hearing the shape of a whole section, not just the moment. This is what lets you map a song rather than name a chord.",steps:[
+ {id:"s9a",t:"Four bars or eight",l:"Count the bars. The click marks every beat, with an accent on the downbeat.",w:"Baione's blues chapter sets this as a listening task in its own right: work out the form and arrangement by ear, including how long each section lasts. Start with the two commonest lengths. Count in bars, not beats, and let the accented downbeat do the counting for you.",d:"fm-bars",o:["b4", "b8"]},
+ {id:"s9b",t:"All four section lengths",l:"Four, eight, twelve or sixteen bars.",w:"The harmony here is deliberately plain and switches between major and minor, because a length should not come with its own sound attached. In real music twelve bars usually means a blues, but if this exercise always played one you would learn to recognise the blues rather than to count. Sixteen is long enough that you have to count in groups of four.",d:"fm-bars"},
+ {id:"s9c",t:"How long each chord lasts",l:"Same eight bars every time. Only the rate of change moves.",w:"The other half of Baione's question: for how many measures does each chord last. This is what separates a progression that moves from a riff that sits still, and it is usually the first thing you need when writing a song down.",d:"fm-len"},
+ {id:"s9d",t:"Beats and tuning",l:"Two notes together. Listen for waves rather than pitch.",w:"When two pitches are nearly identical they interfere and produce audible beats, slow waves in the volume. Baione's tuning method is to ignore the pitch and listen for those waves: keep adjusting until they disappear. It is a more reliable way to tune than trying to hear the interval, and it is the same skill that tells you a guitar has drifted.",d:"fm-tune"}]}
+];
+const ALLSTEPS=[];STAGES.forEach((st,si)=>st.steps.forEach(s=>{s.stage=si;ALLSTEPS.push(s);}));
+
+/* Build a runtime deck for a step. Stats stay under the base deck id. */
+function stepDeck(step){
+ const base=DECKS.filter(d=>d.id===step.d)[0];
+ if(!step.o)return base;
+ /* Always the deck's canonical order, never the order the step happens to
+    list them in, so a given sound sits in the same place in every step. */
+ const o=base.opts.filter(x=>step.o.indexOf(x.k)>-1);
+ const cols=o.length<=2?1:o.length<=4?2:base.cols;
+ const set=base.set?(base.kind==="inv"?base.set:base.set.filter(x=>step.o.indexOf(x.k)>-1)):null;
+ const d=Object.assign({},base,{opts:o,cols:cols,name:step.t});
+ if(set&&set.length)d.set=set;
+ return d;
+}
+const PER_OPT=5;   /* every sound in a step must be heard this many times */
+function stepStats(step){
+ const d=stepDeck(step);let a=0,c=0,covered=0,least=Infinity,leastName="";
+ d.opts.forEach(o=>{const s=S.stats[step.d+":"+o.k]||{a:0,c:0};
+  a+=s.a;c+=s.c;if(s.a>0)covered++;
+  if(s.a<least){least=s.a;leastName=o.full||o.n;}});
+ if(least===Infinity)least=0;
+ return{a:a,c:c,acc:a?c/a:null,total:d.opts.length,covered:covered,
+  full:covered===d.opts.length,least:least,leastName:leastName,
+  ready:least>=PER_OPT,need:PER_OPT};
+}
+/* A step is only internalised once EVERY sound in it has been tested enough
+   on its own. Sounds shared with an earlier step carry their attempts over,
+   but they can never complete a step by themselves. */
+function stepDone(step){const s=stepStats(step);
+ return s.ready&&s.acc>=0.85;}
+function currentStep(){
+ for(let i=0;i<ALLSTEPS.length;i++)if(!stepDone(ALLSTEPS[i]))return ALLSTEPS[i];
+ return ALLSTEPS[ALLSTEPS.length-1];}
+
+/* ------------------------------- the path ------------------------------- */
+/* First sentence, extended to the next one if the first is too short to say
+   anything useful on its own. */
+function excerpt(t){if(!t)return"";
+ const parts=t.match(/[^.!?]+[.!?](?=\s|$)/g);
+ if(!parts)return t;
+ let out=parts[0].trim(), i=1;
+ while(out.length<60&&i<parts.length){out+=" "+parts[i].trim();i++;}
+ return out;}
+function pathHTML(){
+ const cur=currentStep();
+ const done=ALLSTEPS.filter(stepDone).length;
+ /* Contents-page layout: one chapter open at a time, the rest collapsed to a
+    single line, so the page stays roughly one screen however far you get. */
+ const open=(V.openStage==null)?cur.stage:V.openStage;
+ let h='<div class="page"><header class="masthead">'+
+  '<span class="brand">DLD Audio</span>'+
+  '<h1 class="apptitle">Ear Trainer</h1>'+
+  '<span class="tally">'+done+' of '+ALLSTEPS.length+' internalised</span>'+
+  '</header>'+
+  '<button class="suggest" data-step="'+cur.id+'">'+
+   '<span class="suggest-label">Today</span>'+
+   '<span class="suggest-name">'+esc(cur.t)+'</span>'+
+   '<span class="suggest-why">'+esc(excerpt(cur.w))+'</span></button>'+
+  '<h2 class="group-title">The path</h2>';
+
+ STAGES.forEach((st,si)=>{
+  const all=st.steps.length, dn=st.steps.filter(stepDone).length;
+  const finished=dn===all, here=si===cur.stage, isOpen=si===open;
+  h+='<button class="chapter'+(isOpen?" open":"")+(finished?" done":"")+(here?" here":"")+
+   '" data-stage="'+si+'">'+
+   '<span class="mark">'+(finished?"\u2713":here?"\u25CF":"\u25CB")+'</span>'+
+   '<span class="chnum">'+(si+1)+'</span>'+
+   '<span class="chname">'+esc(st.n)+'</span>'+
+   '<span class="chcount">'+dn+'/'+all+'</span></button>';
+  if(!isOpen)return;
+  h+='<section class="group chapterbody">'+
+   '<p class="stagewhy">'+esc(st.why)+'</p>';
+  st.steps.forEach(s=>{const ss=stepStats(s),ok=stepDone(s),now=s.id===cur.id;
+   const touched=(S.started&&S.started[s.id])||ok;
+   const part=!ss.ready;
+   const w=!touched?0:part?(ss.covered/ss.total)*100:(ss.acc||0)*100;
+   const num=!touched?"&mdash;":part?(ss.covered+"/"+ss.total):Math.round(ss.acc*100)+"%";
+   h+='<button class="steprow'+(ok?" done":"")+(now?" now":"")+'" data-step="'+s.id+'">'+
+    '<span class="mark">'+(ok?"\u2713":now?"\u25CF":"\u25CB")+'</span>'+
+    '<span class="stepname">'+esc(s.t)+'</span>'+
+    '<span class="bar sm"><span class="bar-fill'+(touched&&part?" part":"")+'" style="width:'+w+'%"></span></span>'+
+    '<span class="row-num'+(touched&&part?" part":"")+'">'+num+'</span></button>';});
+  h+='</section>';});
+
+ h+='<div class="foot"><button class="ghost" data-go="home">All exercises</button>'+
+  '<button class="ghost" data-go="learn">Reference</button></div>'+
+  '<div class="foot"><button class="ghost" data-go="progress">Where I stand</button>'+
+  '<button class="ghost" data-go="log">Log by hand</button></div>'+
+  '<div class="foot"><button class="ghost" data-dim="1">'+(V.dim?"Brighten":"Dim further")+'</button>'+
+  '<button class="ghost" data-export="1">Backup and restore</button></div>';
+ return h+'</div>';}
+
+/* A/B roots: hold one root while you compare, then move on. */
+function newAbRoot(){let r;do{r=52+Math.floor(Math.random()*13);}while(r===V.abRoot);return r;}
+function abRootName(){const pc=((V.abRoot%12)+12)%12;
+ const m=ROOTS.filter(x=>x.pc===pc);return m.length?m[0].n:"";}
+function abPitched(d){const k=vizKind(d);return k==="piano"||k==="strip";}
+
+/* ------------------------------ a step page ----------------------------- */
+function descPrefix(d){const k=d.kind;
+ if(k==="interval"||k==="compound"||k==="degree")return "iv";
+ if(k==="chord"||k==="arp"||k==="inv"||k==="voicing")return "ch";
+ if(k==="scale")return "sc";
+ return "pr";}
+function stepHTML(){
+ const step=ALLSTEPS.filter(s=>s.id===V.stepId)[0];
+ const d=stepDeck(step),ss=stepStats(step);
+ let h='<div class="page"><button class="x standalone" data-go="path">back</button>'+
+  '<div class="eyebrow">'+esc(STAGES[step.stage].n)+'</div>'+
+  '<h1 class="title">'+esc(step.t)+'</h1>'+
+  '<p class="sub theorytop">'+esc(step.w||step.l)+'</p>'+
+  '<div class="actions"><button class="primary" data-drill="'+step.id+'">Drill it</button>'+
+  '<button class="ghost half" data-study="'+step.id+'">Study mode</button></div>';
+
+ /* A/B compare: every option, same root, on demand */
+ const pitched=abPitched(d);
+ h+='<h2 class="group-title">Hear them side by side</h2>'+
+  '<p class="listen">'+esc(step.l)+'</p>'+
+  '<p class="note abnote">The root stays where it is, so the only thing changing is the sound '+
+  'you are learning. Tap Randomise to move it, once the difference is obvious here.</p>';
+ if(pitched)h+='<div class="rootbar"><span class="rootnow">Root <b>'+abRootName()+'</b></span>'+
+  '<button class="rootnew" data-newroot="1">Randomise</button></div>';
+ h+='<div class="abgrid cols-'+d.cols+'">';
+ d.opts.forEach(o=>{h+='<button class="abbtn'+(V.abKey===o.k?" on":"")+
+  '" data-ab="'+o.k+'">'+keyLabel(o)+'</button>';});
+ h+='</div>';
+ if(V.abKey){const q=buildQuestion(d,V.abKey,V.abRoot);
+  if(vizKind(d))h+=vizHTML(d,q);
+  h+='<div class="ablabel">'+esc(q.label)+'</div>';}
+
+ /* the theory behind this step */
+ const naming=(d.kind==="spell"||d.kind==="spellch");
+ if(!naming){
+ h+='<h2 class="group-title">Each sound in detail</h2><div class="tcards">';
+ d.opts.forEach(o=>{
+  let v="";
+  if(o.s!==undefined)v=o.s+" semitones";
+  else if(o.v)v=degrees(o.v,o.ls).join("  ");
+  else if(o.lab)v=o.lab.join("  ");
+  else if(o.d!==undefined)v=(o.d>0?"+":"")+o.d+" semitones";
+  const txt=DESC[descPrefix(d)+":"+o.k]||"";
+  h+='<div class="tcard"><div class="thead"><span class="tname">'+esc(o.full||o.n)+'</span>'+
+   (v?'<span class="tform">'+v+'</span>':'')+'</div>'+
+   (txt?'<p class="tdesc">'+esc(txt)+'</p>':'')+'</div>';});
+ h+='</div>';}
+
+ h+='<div class="facts">'+
+  factRow("Sounds heard",ss.covered+" of "+ss.total)+
+  (ss.ready?"":factRow("Least tested",esc(ss.leastName)+" \u2014 "+ss.least+" of "+PER_OPT))+
+  factRow("First-time accuracy",ss.a?Math.round(ss.acc*100)+"%  (85% to pass)":"\u2014")+'</div>';
+ h+='<button class="ghost wide" data-reset="'+step.id+'">'+
+  (V.confirmReset===step.id?"Tap again to wipe this step's score":"Reset this step")+'</button>';
+
+
+ return h+'</div>';}
+/* ============================== PERSISTENCE ============================== */
+const KEY="bed-ear-trainer-v2";
+let S={stats:{},manual:{},started:{},totalCorrect:0,sessions:0,vizPractice:1};
+try{const r=localStorage.getItem(KEY);if(r)S=Object.assign(S,JSON.parse(r));}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+function record(id,ok){const c=S.stats[id]||{a:0,c:0};
+ S.stats[id]={a:c.a+1,c:c.c+(ok?1:0)};if(ok)S.totalCorrect++;save();}
+function deckStats(d){let a=0,c=0,seen=0;
+ d.opts.forEach(o=>{const s=S.stats[d.id+":"+o.k];if(s&&s.a){a+=s.a;c+=s.c;seen++;}});
+ return{attempts:a,acc:a?c/a:null,coverage:seen/d.opts.length};}
+function ratingFor(a,n){if(a===null||n<5)return 0;if(a<.4)return 1;if(a<.6)return 2;
+ if(a<.8)return 3;if(a<.92)return 4;return n>=20?5:4;}
+const WORDS=["Untested","Can't hear it","Guessing","Slow but right","Reliable","Automatic"];
+const TARGET=20;
+
+/* ================================ STATE ================================= */
+let V={view:"path",deck:null,q:null,wrong:[],first:true,got:0,asked:0,clean:0,
+ study:false,revealed:false,dim:false,ring:false,openMod:null,showViz:false,
+ openCat:null,learnCat:0,learnKey:null,learnRoot:0,learnHow:"up",
+ stepId:null,abKey:null,abRoot:57,confirmReset:null,openStage:null};
+let ringT=null;
+const el=()=>document.getElementById("app");
+const esc=s=>String(s).replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));
+
+function sound(){if(!V.q)return;playPlan(V.q.plan);V.ring=true;paintLamp();scheduleViz();
+ clearTimeout(ringT);
+ const all=(V.q.plan.tones||[]).concat(V.q.plan.clicks||[],V.q.plan.noise||[]);
+ const span=Math.max.apply(null,all.map(e=>e.t+(e.d||1)))*1000+400;
+ ringT=setTimeout(()=>{V.ring=false;paintLamp();},span);}
+function paintLamp(){const l=document.getElementById("lamp");if(!l)return;
+ l.classList.toggle("on",V.ring);
+ l.querySelector(".lamp-text").textContent=V.ring?"listening":"play again";}
+function nextQ(){clearViz();V.q=buildQuestion(V.deck);V.wrong=[];V.first=true;V.revealed=false;V.showViz=false;
+ render();setTimeout(sound,180);}
+function startDeck(d,study){V.deck=d;V.study=study;V.got=0;V.asked=0;V.clean=0;
+ V.view="drill";nextQ();}
+function answer(k){if(!V.q||V.wrong.indexOf(k)>-1)return;
+ if(k===V.q.answer){if(V.first&&!V.study){record(V.deck.id+":"+V.q.answer,true);V.clean++;}
+  V.got++;V.asked++;
+  const b=document.querySelector('[data-opt="'+k+'"]');if(b)b.classList.add("hit");
+  if(!V.study&&V.got>=TARGET){kill();S.sessions++;save();V.view="done";render();return;}
+  if(!V.study&&S.vizPractice&&vizKind(V.deck)){V.showViz=true;V.revealed=true;render();
+   setTimeout(nextQ,1100);}else setTimeout(nextQ,420);}
+ else{if(V.first&&!V.study)record(V.deck.id+":"+V.q.answer,false);
+  V.first=false;V.wrong.push(k);if(V.study)V.revealed=true;render();}}
+
+/* =============================== EXPORT ================================= */
+function toast(msg){
+ const t=document.createElement("div");t.className="toast";t.textContent=msg;
+ document.body.appendChild(t);
+ setTimeout(()=>{t.classList.add("go");},20);
+ setTimeout(()=>{if(t.parentNode)t.parentNode.removeChild(t);},2600);}
+
+function backupName(){return "ear-trainer-progress-"+new Date().toISOString().slice(0,10)+".json";}
+function backupJSON(){return JSON.stringify(S,null,2);}
+
+/* Download via a link that is actually in the document - Chrome on Android
+   ignores clicks on detached anchors. */
+function downloadBackup(){
+ try{
+  const blob=new Blob([backupJSON()],{type:"application/json"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;a.download=backupName();a.style.display="none";
+  document.body.appendChild(a);a.click();
+  setTimeout(()=>{if(a.parentNode)a.parentNode.removeChild(a);URL.revokeObjectURL(url);},3000);
+  toast("Saved to your Downloads folder");
+ }catch(e){toast("Download blocked - copy the text below instead");}}
+
+function shareBackup(){
+ const json=backupJSON(),name=backupName();
+ let file=null;
+ try{file=new File([new Blob([json],{type:"application/json"})],name,{type:"application/json"});}
+ catch(e){}
+ if(!(file&&navigator.share&&navigator.canShare&&navigator.canShare({files:[file]}))){
+  toast("Sharing not available here - use Download");downloadBackup();return;}
+ navigator.share({files:[file],title:"Ear trainer progress"})
+  .then(()=>toast("Sent"))
+  .catch(err=>{
+   if(err&&err.name==="AbortError")return;          /* user closed the sheet */
+   toast("Share failed - downloading instead");downloadBackup();});}
+
+function copyBackup(){
+ const json=backupJSON();
+ const done=()=>toast("Copied - paste it somewhere safe");
+ if(navigator.clipboard&&navigator.clipboard.writeText){
+  navigator.clipboard.writeText(json).then(done).catch(()=>selectBackup());
+  return;}
+ selectBackup();}
+function selectBackup(){
+ const ta=document.getElementById("bkjson");
+ if(!ta){toast("Nothing to copy");return;}
+ ta.focus();ta.select();
+ toast("Selected - hold and choose Copy");}
+
+function restoreFromText(txt){
+ try{
+  const dd=JSON.parse(txt);
+  if(!dd||!dd.stats)throw new Error("no stats");
+  Object.keys(dd.stats).forEach(k=>{const a=S.stats[k]||{a:0,c:0},b=dd.stats[k];
+   S.stats[k]={a:a.a+(b.a||0),c:a.c+(b.c||0)};});
+  S.manual=Object.assign({},dd.manual||{},S.manual);
+  S.totalCorrect+=dd.totalCorrect||0;
+  S.sessions+=dd.sessions||0;
+  save();V.view="progress";render();toast("Restored and merged");
+ }catch(e){toast("That text is not a valid backup");}}
+
+function backupHTML(){
+ const json=backupJSON();
+ const n=Object.keys(S.stats).length;
+ let h='<div class="page"><button class="x standalone" data-go="path">back</button>'+
+  '<div class="eyebrow">Backup</div><h1 class="title">Keep your<br>progress safe</h1>'+
+  '<p class="sub">Your scores live on this phone only. Save a copy before you replace the app '+
+  'or switch device. '+n+' sounds recorded.</p>'+
+  '<button class="primary" data-bk="share">Share to Drive, email, anywhere</button>'+
+  '<div class="foot"><button class="ghost" data-bk="download">Download file</button>'+
+  '<button class="ghost" data-bk="copy">Copy as text</button></div>'+
+  '<p class="note">If one of those does nothing, use another. The text below is your backup '+
+  'in full - you can always select it by hand and paste it into a note.</p>'+
+  '<textarea id="bkjson" class="bktext" readonly>'+esc(json)+'</textarea>'+
+  '<h2 class="group-title">Restore</h2>'+
+  '<p class="note">Restoring adds the saved attempts to what is already here rather than '+
+  'replacing it, so merging two devices is safe.</p>'+
+  '<div class="foot"><label class="ghost filelabel">Choose a file'+
+  '<input type="file" accept="application/json,.json,text/plain" id="imp"></label></div>'+
+  '<textarea id="bkpaste" class="bktext" placeholder="...or paste a backup here"></textarea>'+
+  '<button class="ghost wide" data-bk="paste">Restore from pasted text</button>';
+ return h+'</div>';}
+
+function importProgress(ev){const f=ev.target.files[0];if(!f)return;
+ const r=new FileReader();
+ r.onload=()=>restoreFromText(String(r.result));
+ r.onerror=()=>toast("Could not read that file");
+ r.readAsText(f);}
+
+/* ================================ RENDER ================================ */
+/* Scroll to the top only when the page actually changes. Re-rendering in
+   place - picking an A/B option, confirming a reset, opening a section -
+   must leave you where you were standing. */
+let lastPage=null;
+function pageKey(){return V.view+"|"+(V.stepId||"")+"|"+(V.learnCat)+(V.learnKey||"");}
+function render(){document.body.classList.toggle("dim",V.dim);
+ const key=pageKey(), same=(key===lastPage);
+ const y=same?(window.scrollY||window.pageYOffset||0):0;
+ el().innerHTML={home:homeHTML,drill:drillHTML,done:doneHTML,
+  progress:progressHTML,log:logHTML,learn:learnHTML,learnItem:learnItemHTML,
+  path:pathHTML,step:stepHTML,backup:backupHTML}[V.view]();
+ lastPage=key;
+ window.scrollTo(0,y);}
+
+function homeHTML(){
+ const sc=DECKS.map(d=>({d:d,s:deckStats(d)}));
+ const sug=sc.slice().sort((a,b)=>{if(a.d.tier!==b.d.tier)return a.d.tier-b.d.tier;
+  return (a.s.coverage<1?0:a.s.acc||0)-(b.s.coverage<1?0:b.s.acc||0);})[0];
+ let h='<div class="page"><button class="x standalone" data-go="path">back to the path</button>'+
+  '<div class="eyebrow">All exercises</div>'+
+  '<h1 class="title">Everything,<br>unsorted</h1>'+
+  '<p class="sub">'+DECKS.reduce((n,d)=>n+d.opts.length,0)+' sounds it can play you, '+
+  'plus '+MANUAL_COUNT+' more to log by hand.</p>'+
+  '<button class="suggest" data-start="'+sug.d.id+'">'+
+  '<span class="suggest-label">Start here tonight</span>'+
+  '<span class="suggest-name">'+esc(sug.d.g)+' &middot; '+esc(sug.d.name)+'</span>'+
+  '<span class="suggest-why">'+(sug.s.attempts===0?"Not tested yet":
+   Math.round(sug.s.acc*100)+"% first-time accuracy &middot; weakest at this level")+
+  '</span></button>';
+ GROUPS.forEach(g=>{h+='<section class="group"><h2 class="group-title">'+g+'</h2>';
+  sc.filter(x=>x.d.g===g).forEach(x=>{
+   h+='<div class="row"><button class="row-main" data-start="'+x.d.id+'">'+
+    '<span class="row-name">'+esc(x.d.name)+'<em class="tier">t'+x.d.tier+'</em></span>'+
+    '<span class="bar"><span class="bar-fill'+(x.s.coverage<1?" part":"")+'" style="width:'+
+     (x.s.coverage<1?x.s.coverage*100:(x.s.acc||0)*100)+'%"></span></span>'+
+    '<span class="row-num'+(x.s.coverage<1?" part":"")+'">'+
+     (x.s.coverage<1?Math.round(x.s.coverage*x.d.opts.length)+"/"+x.d.opts.length
+      :Math.round(x.s.acc*100)+"%")+'</span>'+
+    '</button><button class="row-study" data-study="'+x.d.id+'">study</button></div>';});
+  h+='</section>';});
+ h+='<button class="learnbtn" data-go="learn">Reference &mdash; hear how any sound is built</button>'+
+  '<div class="foot"><button class="ghost" data-go="progress">Where I stand</button>'+
+  '<button class="ghost" data-go="log">Log by hand</button></div>'+
+  '<div class="foot"><button class="ghost" data-dim="1">'+(V.dim?"Brighten":"Dim further")+'</button>'+
+  '<button class="ghost" data-export="1">Backup and restore</button></div>'+
+  '<div class="foot"><button class="ghost" data-viz="1">Keyboard in practice: '+
+  (S.vizPractice?"on":"off")+'</button></div>'+
+  '<p class="note">Practice runs to '+TARGET+' correct. Study mode reveals the answer and keeps no score.</p></div>';
+ return h;}
+
+function keyLabel(o){
+ if(o.num===undefined)return esc(o.n);
+ return (o.qw?'<span class="kq">'+o.qw+'</span>':'')+'<span class="kn">'+esc(o.num)+'</span>';}
+function drillHTML(){const d=V.deck;
+ let h='<div class="drill"><div class="drill-top">'+
+  '<button class="x" data-go="'+(V.stepId?"step":"home")+'">esc</button>'+
+  '<div class="drill-name">'+esc(d.name)+'</div>'+
+  '<div class="count">'+(V.study?V.got:V.got+"/"+TARGET)+'</div></div>'+
+  '<div class="pline"><span style="width:'+(V.study?0:(V.got/TARGET)*100)+'%"></span></div>'+
+  (V.q.prompt?'<div class="prompt">'+esc(V.q.prompt)+'</div>':'')+
+  '<button class="lamp'+(V.ring?" on":"")+'" id="lamp" data-replay="1">'+
+  '<span class="lamp-glow"></span><span class="lamp-text">play again</span></button>';
+ const seeViz=V.study||V.showViz;
+ if(seeViz)h+=vizHTML(V.deck,V.q);
+ if((V.study&&V.revealed)||V.showViz)h+='<div class="reveal">'+esc(V.q.label)+'</div>';
+ else if(!V.study&&!V.first)h+='<div class="reveal muted">Try again</div>';
+ h+='<div class="keys cols-'+d.cols+'">';
+ d.opts.forEach(o=>{const dead=V.wrong.indexOf(o.k)>-1;
+  h+='<button class="key'+(dead?" dead":"")+'" data-opt="'+o.k+'"'+(dead?" disabled":"")+'>'+
+   keyLabel(o)+'</button>';});
+ return h+'</div><button class="skip" data-skip="1">skip this one</button></div>';}
+
+function doneHTML(){const t=Math.max(V.asked,V.got),p=t?Math.round(V.clean/t*100):0;
+ const m=p>=92?"That's automatic. Move up a tier.":p>=80?"Reliable. One more session locks it in.":
+  p>=60?"You're hearing it but still calculating. Repetition, not theory.":
+  "Slow down and use study mode on this one for a few nights.";
+ return '<div class="page done"><div class="eyebrow">Session closed</div>'+
+  '<h1 class="title">'+esc(V.deck.name)+'</h1>'+
+  '<div class="bignum">'+p+'<span>%</span></div>'+
+  '<p class="sub">First-time accuracy across '+t+' questions.</p>'+
+  '<p class="note">'+m+'</p>'+
+  (V.stepId?'<button class="primary" data-drill="'+V.stepId+'">Run it again</button>':'<button class="primary" data-start="'+V.deck.id+'">Run it again</button>')+
+  (V.stepId?'<button class="ghost wide" data-go="path">Back to the path</button>':'<button class="ghost wide" data-go="home">Back to the list</button>')+'</div>';}
+
+function progressHTML(){const rows=[];
+ DECKS.forEach(d=>d.opts.forEach(o=>{const s=S.stats[d.id+":"+o.k];
+  if(s&&s.a>=3){const a=s.c/s.a;rows.push({d:d,o:o,a:a,r:ratingFor(a,s.a)});}}));
+ const weak=rows.slice().sort((x,y)=>x.a-y.a).slice(0,15);
+ const strong=rows.filter(r=>r.r>=4).length;
+ const manualDone=Object.keys(S.manual).filter(k=>S.manual[k]>0).length;
+ let h='<div class="page"><button class="x standalone" data-go="home">back</button>'+
+  '<div class="eyebrow">Where I stand</div>'+
+  '<h1 class="title">'+strong+' sounds<br>you own outright</h1>'+
+  '<p class="sub">'+rows.length+' tested by drill, '+manualDone+' logged by hand. '+
+  S.totalCorrect+' correct calls, '+S.sessions+' sessions finished.</p>';
+ GROUPS.forEach(g=>{const ds=DECKS.filter(d=>d.g===g).map(d=>({d:d,s:deckStats(d)}))
+  .filter(x=>x.s.attempts>0);
+  if(!ds.length)return;
+  h+='<h2 class="group-title">'+g+'</h2>';
+  ds.forEach(x=>{h+='<div class="weak"><span class="weak-deck2">'+esc(x.d.name)+'</span>'+
+   '<span class="bar sm"><span class="bar-fill" style="width:'+(x.s.acc*100)+'%"></span></span>'+
+   '<span class="weak-num">'+Math.round(x.s.acc*100)+'%</span></div>';});});
+ if(weak.length){h+='<h2 class="group-title">Weakest sounds</h2>';
+  weak.forEach(r=>{h+='<div class="weak"><span class="weak-name">'+esc(r.o.n)+'</span>'+
+   '<span class="weak-deck">'+esc(r.d.name)+'</span>'+
+   '<span class="weak-num">'+Math.round(r.a*100)+'%</span>'+
+   '<span class="weak-word">'+WORDS[r.r]+'</span></div>';});}
+ else h+='<p class="note">Nothing has enough attempts yet. Three answers on a sound and it appears here.</p>';
+ h+='<div class="foot"><button class="ghost" data-export="1">Backup and restore</button>'+
+  '<label class="ghost filelabel">Restore<input type="file" accept="application/json" id="imp"></label></div>';
+ return h+'</div>';}
+
+function logHTML(){
+ let h='<div class="page"><button class="x standalone" data-go="home">back</button>'+
+  '<div class="eyebrow">Log by hand</div><h1 class="title">What it can\'t<br>play for you</h1>'+
+  '<p class="sub">Needs an instrument, a microphone, or real recorded audio. Tap a rating to cycle it.</p>';
+ LOG.forEach((mod,mi)=>{const open=V.openMod===mi;
+  h+='<button class="modhead'+(open?" open":"")+'" data-mod="'+mi+'">'+esc(mod[0])+
+   '<span>'+(open?"&minus;":"+")+'</span></button>';
+  if(!open)return;
+  mod[1].forEach((grp,gi)=>{h+='<h2 class="group-title">'+esc(grp[0])+'</h2>';
+   grp[1].split("|").forEach((item,ii)=>{const id="m"+mi+"."+gi+"."+ii,r=S.manual[id]||0;
+    h+='<div class="logrow"><span class="logname">'+esc(item)+'</span>'+
+     '<button class="chip r'+r+'" data-rate="'+id+'">'+WORDS[r]+'</button></div>';});});});
+ return h+'</div>';}
+
+const MANUAL_COUNT=LOG.reduce((n,m)=>n+m[1].reduce((k,g)=>k+g[1].split("|").length,0),0);
+
+/* =============================== EVENTS ================================= */
+document.addEventListener("change",e=>{if(e.target.id==="imp")importProgress(e);});
+document.addEventListener("click",e=>{const t=e.target.closest("button");if(!t)return;
+ if(t.dataset.start&&DECKS.filter(x=>x.id===t.dataset.start).length){
+  V.stepId=null;startDeck(DECKS.filter(x=>x.id===t.dataset.start)[0],false);return;}
+ if(t.dataset.study&&DECKS.filter(x=>x.id===t.dataset.study).length){
+  V.stepId=null;startDeck(DECKS.filter(x=>x.id===t.dataset.study)[0],true);return;}
+ if(t.dataset.replay){sound();return;}
+ if(t.dataset.skip){V.asked++;nextQ();return;}
+ if(t.dataset.cat!==undefined&&t.dataset.cat!==""){const i=+t.dataset.cat;
+  V.openCat=V.openCat===i?null:i;render();return;}
+ if(t.dataset.item){const p=t.dataset.item.split(".");
+  V.learnCat=+p[0];V.learnKey=p[1];V.learnHow=LEARN[+p[0]].t==="chord"?"block":
+   (LEARN[+p[0]].t==="prog"?"play":"up");
+  V.view="learnItem";render();learnPlay();return;}
+ if(t.dataset.root!==undefined&&t.dataset.root!==""){V.learnRoot=+t.dataset.root;
+  render();learnPlay();return;}
+ if(t.dataset.how){V.learnHow=t.dataset.how;render();learnPlay();return;}
+ if(t.dataset.stage!==undefined&&t.dataset.stage!==""){const si=+t.dataset.stage;
+  const cur=(V.openStage==null)?currentStep().stage:V.openStage;
+  V.openStage=(si===cur)?-1:si;render();return;}
+ if(t.dataset.reset){
+  if(V.confirmReset===t.dataset.reset){
+   var rs=ALLSTEPS.filter(function(x){return x.id===t.dataset.reset})[0];
+   stepDeck(rs).opts.forEach(function(o){delete S.stats[rs.d+":"+o.k];});
+   if(S.started)delete S.started[rs.id];
+   V.confirmReset=null;save();render();toast("Step reset");return;}
+  V.confirmReset=t.dataset.reset;render();return;}
+ if(t.dataset.step){V.stepId=t.dataset.step;V.abKey=null;V.confirmReset=null;
+  V.abRoot=newAbRoot();V.view="step";render();return;}
+ if(t.dataset.ab){
+  var sd=stepDeck(ALLSTEPS.filter(function(x){return x.id===V.stepId})[0]);
+  V.abKey=t.dataset.ab;
+  render();playPlan(buildQuestion(sd,V.abKey,V.abRoot).plan);scheduleViz();return;}
+ if(t.dataset.newroot){V.abRoot=newAbRoot();
+  var sd2=stepDeck(ALLSTEPS.filter(function(x){return x.id===V.stepId})[0]);
+  render();
+  if(V.abKey){playPlan(buildQuestion(sd2,V.abKey,V.abRoot).plan);scheduleViz();}
+  return;}
+ if(t.dataset.drill){var st=ALLSTEPS.filter(function(x){return x.id===t.dataset.drill})[0];
+  if(!S.started)S.started={};S.started[st.id]=1;save();
+  startDeck(stepDeck(st),false);return;}
+ if(t.dataset.study&&ALLSTEPS.filter(function(x){return x.id===t.dataset.study}).length){
+  var st2=ALLSTEPS.filter(function(x){return x.id===t.dataset.study})[0];
+  if(!S.started)S.started={};S.started[st2.id]=1;save();
+  startDeck(stepDeck(st2),true);return;}
+ if(t.dataset.dim){V.dim=!V.dim;render();return;}
+ if(t.dataset.viz){S.vizPractice=S.vizPractice?0:1;save();render();return;}
+ if(t.dataset.export){V.view="backup";render();return;}
+ if(t.dataset.bk==="share"){shareBackup();return;}
+ if(t.dataset.bk==="download"){downloadBackup();return;}
+ if(t.dataset.bk==="copy"){copyBackup();return;}
+ if(t.dataset.bk==="paste"){const ta=document.getElementById("bkpaste");
+  restoreFromText(ta?ta.value:"");return;}
+ if(t.dataset.mod!==undefined&&t.dataset.mod!==""){const i=+t.dataset.mod;
+  V.openMod=V.openMod===i?null:i;render();return;}
+ if(t.dataset.rate){const id=t.dataset.rate;S.manual[id]=((S.manual[id]||0)+1)%6;save();
+  t.className="chip r"+S.manual[id];t.textContent=WORDS[S.manual[id]];return;}
+ if(t.dataset.go){kill();clearViz();V.view=t.dataset.go;render();return;}
+ if(t.dataset.opt){answer(t.dataset.opt);return;}});
+function learnPlay(){const cat=LEARN[V.learnCat];
+ const item=cat.items.filter(i=>i.k===V.learnKey)[0];
+ playPlan(learnPlan(cat,item,V.learnRoot,V.learnHow||"up"));scheduleViz();}
+render();
+
+</script>
+</body>
+</html>
