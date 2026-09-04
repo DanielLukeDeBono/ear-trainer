@@ -244,6 +244,16 @@ button:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
 
 .prompt{text-align:center;font-family:Oswald,"Arial Narrow",sans-serif;font-size:21px;
  color:var(--ink);padding:6px 8px 14px;line-height:1.25}
+
+.gsearch{width:100%;background:var(--surface);border:1px solid var(--line);border-radius:7px;
+ color:var(--ink);font:inherit;font-size:15px;padding:14px;margin-bottom:20px}
+.gsearch::placeholder{color:var(--muted)}
+.gentry{padding:14px 0;border-bottom:1px solid var(--line)}
+.gterm{font-family:Oswald,"Arial Narrow",sans-serif;font-size:16px;color:var(--amber);margin-bottom:5px}
+.gdef{margin:0;font-size:14px;line-height:1.6;color:var(--muted)}
+.glosslink{background:none;border:none;color:var(--amber);font:inherit;font-size:13px;
+ padding:0 0 18px;cursor:pointer;text-decoration:underline;opacity:.85;display:block}
+.lognote{color:var(--muted);font-size:12.5px;line-height:1.55;margin:0 0 12px}
 </style>
 </head>
 <body>
@@ -467,6 +477,14 @@ const LOG = [
 /* ================================ DECKS ================================= */
 
 
+
+const PULL=[
+ {k:"rest",n:"Settled",ch:[[9,"min"],[4,"min"],[0,"maj"]]},
+ {k:"pull",n:"Wants to move",ch:[[7,"maj"],[11,"dim"]]}];
+const FUNC=[
+ {k:"ton",n:"Tonic",ch:[[9,"min"],[4,"min"]]},
+ {k:"pre",n:"Pre-dominant",ch:[[5,"maj"],[2,"min"]]},
+ {k:"dom",n:"Dominant",ch:[[7,"maj"],[11,"dim"]]}];
 const BARS=[{k:"b4",n:"4 bars",bars:4},{k:"b8",n:"8 bars",bars:8},
  {k:"b12",n:"12 bars",bars:12},{k:"b16",n:"16 bars",bars:16}];
 const CHLEN=[{k:"c1",n:"1 bar",bars:1},{k:"c2",n:"2 bars",bars:2},{k:"c4",n:"4 bars",bars:4}];
@@ -538,6 +556,8 @@ const DECKS=[
 {id:"nm-dn",g:"Naming",name:"Any interval below a note",tier:4,kind:"spell",dir:"down",set:IV,opts:NOTES,cols:3},
 {id:"nm-ch",g:"Naming",name:"Chord tones",tier:3,kind:"spellch",opts:NOTES,cols:3},
 
+{id:"fn-pull",g:"Harmony",name:"Settled or unsettled",tier:1,kind:"function",opts:PULL,cols:1},
+{id:"fn-maj",g:"Harmony",name:"Harmonic function",tier:3,kind:"function",opts:FUNC,cols:1},
 {id:"fm-bars",g:"Form",name:"Section length",tier:2,kind:"bars",opts:BARS,cols:2},
 {id:"fm-len",g:"Form",name:"How long each chord lasts",tier:2,kind:"chordlen",opts:CHLEN,cols:1},
 {id:"fm-tune",g:"Form",name:"Beats and tuning",tier:3,kind:"tune",opts:TUNE,cols:1}
@@ -598,6 +618,14 @@ function buildQuestion(deck,force,fixedRoot){
  const root=fixedRoot==null?rint(52,64):fixedRoot,K=deck.kind;
 
 
+
+ if(K==="function"){
+  const o=pick(deck.opts,force), r=fixedRoot==null?rint(52,64):57;
+  const c=fixedRoot==null?rnd(o.ch):o.ch[0];
+  let t=voice(r,0,"maj",0,1.15);
+  t=t.concat(voice(r,c[0],c[1],1.25,1.9));
+  return{answer:o.k,plan:{tones:t},label:o.n};
+ }
  if(K==="bars"){
   const o=pick(deck.opts,force), bpm=168, beat=60/bpm, r=rint(52,60);
   const F=fixedRoot==null?rnd(FORMS):FORMS[0];
@@ -894,16 +922,72 @@ function roman(q,i,acc){
 
 /* --------------------------- written character --------------------------- */
 const DESC={
-"pr:b4":"Four bars. The shortest section that still feels like a section rather than a fragment.",
-"pr:b8":"Eight bars. The commonest phrase length in popular music: a verse, a chorus, or half of either.",
-"pr:b12":"Twelve bars. Almost always the blues, and the length itself is the giveaway before you hear a single chord.",
-"pr:b16":"Sixteen bars. Long enough that you have to count in groups rather than one bar at a time.",
-"pr:c1":"One bar per chord. The busiest common rate, and it makes a progression feel like it is moving.",
-"pr:c2":"Two bars per chord. Half the movement, twice the space. Rock and metal sit here constantly.",
-"pr:c4":"Four bars per chord. Almost static. A riff or a modal vamp rather than a progression.",
-"pr:t0":"In tune. Two identical pitches fuse into one thicker sound with no waver in it.",
-"pr:tsh":"Sharp. The second note is above the first, and the two beat against each other. Baione's instruction is to listen for the beats rather than the pitch: keep adjusting until the waves disappear.",
-"pr:tfl":"Flat. The same beating, from the other side. Which direction it is off is harder to hear than that it is off at all.",
+"pr:rest":"Settled. The chord sits where it is. Either the tonic itself, or one of the chords that shares two notes with it and so colours home rather than leaving it.",
+"pr:pull":"Wants to move. The chord strains back toward the tonic. You do not need to know its name to hear this - the pull is a separate thing from the chord's quality.",
+"pr:ton":"Tonic function. The chords that feel like home or an extension of it: I, and also vi and iii. UnCAGED Part 2 calls vi and iii tonic expansion chords, because each shares two notes with the I chord, so moving there does not feel like going anywhere.",
+"pr:pre":"Pre-dominant function. IV and ii. The rising action of the story: they typically come before a dominant chord on the way into a cadence.",
+"pr:dom":"Dominant function. V and vii diminished. Both are tensions that want to resolve to the tonic, which is why they can substitute for each other.",
+"subdiv:q":"Quarter notes. One hit per beat, nothing between them. This is the pulse itself.",
+"subdiv:e":"Eighth notes. Two per beat, the commonest subdivision in almost every style.",
+"subdiv:t8":"Eighth-note triplets. Three per beat. Baione calls the triplet the fundamental element of every swing and shuffle feel, which is why it is worth separating from four-per-beat early.",
+"subdiv:s16":"Sixteenth notes. Four per beat. Against triplets this is the pair people confuse most: both feel busy, but one divides the beat in three and the other in four.",
+"subdiv:quin":"Quintuplets. Five per beat. Uneven against the pulse, so they never settle into a comfortable pattern.",
+"subdiv:sext":"Sextuplets. Six per beat, which you can hear either as two groups of three or three groups of two.",
+"subdiv:sep":"Septuplets. Seven per beat. Rare, and mostly a texture rather than something you count.",
+"subdiv:t32":"Thirty-second notes. Eight per beat. At most tempos this stops sounding like rhythm and starts sounding like a blur.",
+"metre:44":"Four beats to the bar, each a quarter note. The default in almost all popular music.",
+"metre:34":"Three beats to the bar. Waltz time. The accent pattern is strong-weak-weak.",
+"metre:24":"Two beats to the bar. Marches and polkas. Counts the same as 4/4 but the accent comes round twice as often.",
+"metre:68":"Six eighth notes to the bar, felt as two groups of three. Compound time: the beat divides in three rather than two, which is what makes it lilt.",
+"metre:98":"Nine eighth notes, felt as three groups of three. Compound triple time.",
+"metre:128":"Twelve eighth notes, felt as four groups of three. The metre behind most slow blues and doo-wop ballads.",
+"metre:54":"Five beats to the bar. Usually heard as 3+2 or 2+3, and which one it is changes the feel completely.",
+"metre:78":"Seven eighth notes to the bar. Grouped 3+2+2 or 2+2+3. Common in progressive metal and Balkan music.",
+"feel:str8":"Straight eighths. The two halves of each beat are exactly equal.",
+"feel:sw8":"Swung eighths. Baione's point: eighth notes in a shuffle are usually played as triplets even though they are written straight, so the first of each pair is long and the second short.",
+"feel:str16":"Straight sixteenths. Four even hits per beat. Busier than eighths but still perfectly square.",
+"feel:gal":"Gallop. A dotted eighth followed by a sixteenth, so the second note arrives late and clipped. The rhythm most galloping metal riffs are built on.",
+"poly:32":"Three against two. The simplest polyrhythm, and the one that underlies every hemiola.",
+"poly:43":"Four against three. Harder, because neither side lines up until the very end of the cycle.",
+"poly:54":"Five against four. The two streams touch only once per cycle.",
+"poly:74":"Seven against four. At this ratio you stop hearing two rhythms and start hearing one uneven texture.",
+"tempo:t1":"60 to 75 beats per minute. Ballad tempo, roughly one beat per second.",
+"tempo:t2":"76 to 95. Slow to moderate. Most slow blues sits here.",
+"tempo:t3":"96 to 115. Walking pace, and the range a great deal of pop occupies.",
+"tempo:t4":"116 to 140. Up-tempo rock. 120 is the default on most drum machines, which makes it a useful anchor.",
+"tempo:t5":"141 to 170. Fast. Punk and up-tempo metal.",
+"tempo:t6":"171 to 200. Very fast, and at this point you may start hearing the beat in half time instead.",
+"eqband:63":"63 Hz. Sub-bass. Felt more than heard, and mostly kick drum and bass guitar fundamentals.",
+"eqband:125":"125 Hz. Bass. The weight of a mix. Too much here and everything sounds boomy.",
+"eqband:250":"250 Hz. Low mids. The muddy region: cutting here is the commonest fix for a cluttered mix.",
+"eqband:500":"500 Hz. Mids. Boxiness lives here, the sound of a cheap speaker or a cardboard box.",
+"eqband:1k":"1 kHz. The centre of hearing, and the reference frequency for most audio measurements.",
+"eqband:2k":"2 kHz. Upper mids. Where a guitar or a snare cuts through, and where harshness starts.",
+"eqband:4k":"4 kHz. Presence. This is the range the ear is most sensitive to, so small changes are very audible.",
+"eqband:8k":"8 kHz. Treble. Sibilance on vocals and the attack on cymbals.",
+"eqband:16k":"16 kHz. Air. Barely a pitch at all, more a sense of openness. Many adults cannot hear the top of this range.",
+"eqtype:boost":"Bell boost. A hump centred on one frequency, tapering either side.",
+"eqtype:cut":"Bell cut. The same shape inverted. Cuts are usually less audible than boosts of the same size.",
+"eqtype:hs":"High shelf. Everything above the frequency is lifted equally, rather than one band.",
+"eqtype:ls":"Low shelf. Everything below the frequency is lifted. Used for adding weight rather than punch.",
+"eqtype:hp":"High-pass. Everything below the frequency is removed. The single most used filter in mixing.",
+"eqtype:lp":"Low-pass. Everything above the frequency is removed. Makes a sound distant or muffled.",
+"eqq:nar":"Narrow Q. A surgical notch affecting only a sliver of the spectrum. Used to remove a specific problem.",
+"eqq:med":"Medium Q. Wide enough to shape a sound, narrow enough to be deliberate.",
+"eqq:wid":"Wide Q. A gentle curve across a broad range. Sounds like tone rather than like an effect.",
+"ch:drop2":"Drop 2. Take a close-position chord and drop the second note from the top down an octave. The standard guitar voicing, because it is playable where close position is not.",
+"ch:drop3":"Drop 3. Drop the third note from the top down an octave, leaving a wide gap above the bass.",
+"ch:shell":"Shell voicing. Root, 3rd and 7th only, with the 5th omitted. The 5th carries the least information, so dropping it costs nothing and frees a finger.",
+"bars:b4":"Four bars. The shortest section that still feels like a section rather than a fragment.",
+"bars:b8":"Eight bars. The commonest phrase length in popular music: a verse, a chorus, or half of either.",
+"bars:b12":"Twelve bars. Almost always the blues, and the length itself is the giveaway before you hear a single chord.",
+"bars:b16":"Sixteen bars. Long enough that you have to count in groups rather than one bar at a time.",
+"chordlen:c1":"One bar per chord. The busiest common rate, and it makes a progression feel like it is moving.",
+"chordlen:c2":"Two bars per chord. Half the movement, twice the space. Rock and metal sit here constantly.",
+"chordlen:c4":"Four bars per chord. Almost static. A riff or a modal vamp rather than a progression.",
+"tune:t0":"In tune. Two identical pitches fuse into one thicker sound with no waver in it.",
+"tune:tsh":"Sharp. The second note is above the first, and the two beat against each other. Baione's instruction is to listen for the beats rather than the pitch: keep adjusting until the waves disappear.",
+"tune:tfl":"Flat. The same beating, from the other side. Which direction it is off is harder to hear than that it is off at all.",
 "ch:close":"Close position: every chord member inside a single octave. Berklee treats this as separate from inversion, since the bass note decides the inversion regardless of spacing.",
 "ch:open":"Open position: the chord members spread over more than one octave. Same chord, same inversion, wider sound.",
 "iv:do":"The tonic. Home, and the note every other degree is measured against.",
@@ -1048,7 +1132,8 @@ const DESC={
 "pr:viv":"The tonic turned into a dominant 7th so it can resolve to IV.",
 "pr:viii":"A dominant aimed at the mediant. The least common of the secondaries.",
 "pr:tsub":"The dominant replaced by a chord a tritone away. Ligon calls it the tritone substitute: the same tritone is inside both chords, so only the bass changes character.",
-"pr:b12":"Four bars of I, two of IV, two of I, then V-IV-I-V. The base form.",
+"pr:b12":"Four bars of I, two of IV, two of I, then V-IV-I-V. The base twelve-bar form.",
+"bars:b12":"Twelve bars. In real music this length usually means a blues, though the examples here stay deliberately neutral.",
 "pr:bqc":"The same twelve bars but IV arrives in bar two. Announces the form earlier.",
 "pr:bjz":"Blues rebuilt with ii-Vs and a vi chord. Same form, denser harmony.",
 "pr:bmin":"Minor blues, usually with a flat VI to V approach in bars nine and ten."
@@ -1219,6 +1304,7 @@ const STAGES=[{n:"Major and minor",why:"Everything else is measured against this
  {id:"s2f",t:"All twelve, descending",l:"Harder than ascending. Different intervals become confusable.",w:"Descending intervals are genuinely harder than ascending ones, because falling shapes are less familiar and your ear anchors on the higher note first. Bass lines and vocal melodies descend constantly, so this is not optional.",d:"iv-desc"},
  {id:"s2g",t:"All twelve, played together",l:"Every interval as a simultaneous blend rather than a melodic step.",w:"The same twelve, but harmonic rather than melodic. Consonant ones fuse into a single sound; dissonant ones beat against each other. You are now judging texture rather than distance, and this is what you do when naming the interval between two voices in a chord.",d:"iv-harm"}]},
 {n:"Tension, and the bass note",why:"The sounds that will not sit still, and what happens when the lowest note changes.",steps:[ {id:"s3a",t:"Tritone vs perfect 5th",l:"One semitone apart, but one is the most stable interval and the other the least.",w:"The tritone splits the octave exactly in half, six semitones, so it is the only interval that inverts into itself. It has no simple frequency ratio, which is why it refuses to settle next to the perfect 5th.",d:"iv-asc",o:["P5", "TT"]},
+ {id:"s3a2",t:"Settled or unsettled",l:"A chord sets the key, then another. Does the second one want to go somewhere?",w:"You do not have to name a chord to hear what it is doing. Whether a chord strains back toward home is a separate thing from whether it is major or minor, and it is audible long before you can identify qualities reliably. This is the same idea as harmonic function in Chapter 7, reduced to the one distinction that carries most of the weight: pull, or no pull. Everything in that later chapter is a refinement of this.",d:"fn-pull"},
  {id:"s3b",t:"Minor vs diminished triad",l:"Diminished is a minor triad with the 5th lowered - two minor 3rds stacked.",w:"Losing the perfect 5th removes the stable frame, and the chord leans somewhere instead of sitting still. Berklee's ear training runs exactly this pair as its second exercise, straight after major against minor.",d:"tri-q",o:["min", "dim"]},
  {id:"s3c",t:"Major vs augmented triad",l:"Augmented is a major triad with the 5th raised - two major 3rds stacked, and no root.",w:"It is perfectly symmetrical, which means any of its notes could be the root and none of them sounds like home. Berklee runs this as its third exercise, again changing only one note from something you already know.",d:"tri-q",o:["maj", "aug"]},
  {id:"s3d",t:"All four triad qualities",l:"Major, minor, diminished, augmented. Find the 3rd, then the 5th.",w:"All four differ only in the 3rd and the 5th. Identify the 3rd first, major or minor, then check the 5th, perfect, lowered or raised. Those two answers give you the name.",d:"tri-q",o:["maj", "min", "dim", "aug"]},
@@ -1231,7 +1317,10 @@ const STAGES=[{n:"Major and minor",why:"Everything else is measured against this
  {id:"s4d",t:"Half-diminished vs diminished 7",l:"One more semitone drop, this time on the 7th again.",w:"Last link: lower the 7th of a m7 flat 5 and you get a diminished 7, four evenly spaced minor 3rds. Berklee makes the spelling point that the 7th has now been lowered twice, so it is often written as its enharmonic equivalent to avoid a double flat.",d:"sev-q",o:["m7b5", "dim7"]},
  {id:"s4e",t:"The big three",l:"maj7, dominant 7, m7. Ninety per cent of the seventh chords you will meet.",w:"These are the chords built on degrees I, V and ii of a major key. An enormous amount of jazz and pop harmony is just these three moving around each other.",d:"sev-q",o:["maj7", "dom7", "min7"]},
  {id:"s4f",t:"Six seventh qualities",l:"Adding minor-major 7, the one that sounds faintly sinister.",w:"The minor-major 7 is a minor triad carrying the natural 7th, which comes out of harmonic minor. With these six you have covered essentially every seventh chord you will meet in practice.",d:"sev-q",o:["maj7", "dom7", "min7", "m7b5", "dim7", "mMaj7"]},
- {id:"s4g",t:"Seventh chord inversions",l:"Four positions. 3rd inversion puts the 7th in the bass and sounds unstable.",w:"A four-note chord has four possible bass notes. 3rd inversion puts the 7th at the bottom, a step below the root, and that near-collision is why it sounds unstable and nearly always falls.",d:"sev-i"}]},
+ {id:"s4g",t:"Seventh chord inversions",l:"Four positions. 3rd inversion puts the 7th in the bass and sounds unstable.",w:"A four-note chord has four possible bass notes. 3rd inversion puts the 7th at the bottom, a step below the root, and that near-collision is why it sounds unstable and nearly always falls.",d:"sev-i"},
+ {id:"s4h",t:"Sevenths, arpeggiated",l:"The same six qualities one note at a time.",w:"A blocked seventh chord gives you one colour to judge; an arpeggio makes you track four pitches in order. This is the harder version and the one that matters for transcription, because a guitar rarely hands you all four notes at once.",d:"sev-arp"},
+ {id:"s4i",t:"Extended and altered",l:"Ninths, elevenths, thirteenths and the altered dominants.",w:"An extension is a chord tone beyond the 7th, named as a compound interval: the 9th is a 2nd an octave up, the 13th a 6th. Altering one - flat 9, sharp 9, sharp 11 - sharpens a dominant's need to resolve. This is the widest answer set in the app and it is genuinely difficult.",d:"ext-q"},
+ {id:"s4j",t:"Voicing type",l:"Same chord, same inversion, different spacing.",w:"Berklee separates spacing from inversion: close position keeps every chord member inside one octave, open position spreads them wider, and neither changes which note is in the bass. Drop 2 is the standard guitar voicing because it is playable where close position is not.",d:"voi"}]},
 {n:"Hearing inside a key",why:"Naming a sound in isolation is one skill. Naming it against a tonic is the one you use.",steps:[ {id:"s5a",t:"Scale degrees in a major key",l:"A cadence sets the key, then one note. Name it against the tonic, not the note before.",w:"This is the skill Carter builds towards with the concept of the root note, and it is different from interval recognition. Instead of measuring one note against the previous one, you measure everything against a tonic you are holding in your head. It is how you work out a melody without a reference pitch.",d:"deg-maj"},
  {id:"s5b",t:"Scale degrees in a minor key",l:"Same task, minor tonic. The 3rd, 6th and 7th all sit lower.",w:"The same skill in a minor context. Your reference points move, and the degrees you learned in major no longer fall where you expect, which is why this needs separate practice rather than transferring automatically.",d:"deg-min"},
  {id:"s5c",t:"Compound intervals",l:"Wider than an octave. Reduce them to the simple interval plus an octave.",w:"A compound interval is a simple interval plus an octave: a 9th is a 2nd, an 11th is a 4th, a 13th is a 6th. Chord extensions are named this way, which is why a 13th chord contains what is really a major 6th an octave up.",d:"iv-comp"},
@@ -1243,15 +1332,20 @@ const STAGES=[{n:"Major and minor",why:"Everything else is measured against this
  {id:"s6d",t:"Phrygian vs Aeolian",l:"One note apart: the 2nd. Phrygian lowers it, and that semitone is the whole flavour.",w:"That semitone immediately above the root is the darkest interval in common use, and it is why Phrygian turns up everywhere in metal.",d:"sc-maj",o:["phr", "aeo"]},
  {id:"s6e",t:"All seven major modes",l:"Order them by brightness: Lydian, Ionian, Mixolydian, Dorian, Aeolian, Phrygian, Locrian.",w:"Each step down that list lowers exactly one more note. Worth flagging: this brightness ordering is a common teaching device but it does not appear in any of your books, so treat it as a useful mental model rather than a sourced fact.",d:"sc-maj"},
  {id:"s6f",t:"Harmonic minor vs Phrygian dominant",l:"Same seven notes, different starting point. You already know harmonic minor.",w:"Phrygian dominant is the fifth mode of harmonic minor. Carter names it Phrygian #3, which says the same thing more plainly: it is Phrygian with the 3rd raised. A harmonic minor and E Phrygian dominant contain identical pitches; only the note that feels like home has changed.",d:"sc-harm",o:["hm", "phrdom"]},
- {id:"s6g",t:"Pentatonic and blues",l:"Fewer notes, so the gaps are the identifying feature.",w:"Carter is explicit that pentatonics exist to remove the semitone clashes from the diatonic scale: two notes are omitted, and what is left cannot clash. Minor pentatonic is the same five notes as major pentatonic started from the 6th degree. The blues scale adds a lowered 5th as a passing note.",d:"sc-pent",o:["majp", "minp", "blues"]}]},
+ {id:"s6g",t:"Pentatonic and blues",l:"Fewer notes, so the gaps are the identifying feature.",w:"Carter is explicit that pentatonics exist to remove the semitone clashes from the diatonic scale: two notes are omitted, and what is left cannot clash. Minor pentatonic is the same five notes as major pentatonic started from the 6th degree. The blues scale adds a lowered 5th as a passing note.",d:"sc-pent",o:["majp", "minp", "blues"]},
+ {id:"s6h",t:"Modes over a drone",l:"The same seven modes, with the tonic held underneath.",w:"A drone removes the guesswork about which note is home, so you hear each mode as a colour against a fixed centre rather than as a run of notes. That is much closer to how modes work in real music, and harder than identifying a scale in isolation.",d:"sc-drone"},
+ {id:"s6i",t:"Melodic minor modes",l:"Seven more, each one note away from something you know.",w:"Melodic minor is natural minor with the 6th and 7th both raised. Its modes supply most of what jazz uses over altered dominants: Lydian dominant is a dominant with a raised 4th, and the altered scale is the seventh mode, where every extension is altered at once.",d:"sc-mel"},
+ {id:"s6j",t:"Symmetric scales",l:"Scales built from one repeating interval.",w:"Whole tone is six whole steps; diminished alternates half and whole. Because the pattern repeats, they have no leading tone and no single tonic, which is why they float rather than resolve.",d:"sc-symm"}]},
 {n:"Movement",why:"Where chords go, not just what they are. This is the stage that answers key-change questions.",steps:[ {id:"s7a",t:"Perfect vs plagal cadence",l:"V to I against IV to I. One has a leading tone, the other does not.",w:"A cadence is how a phrase ends. V to I carries a leading tone that rises a semitone into the tonic, which is why it sounds like arrival. Murray Brown notes the raised 7th in harmonic minor exists precisely to supply that leading tone.",d:"cad",o:["pac", "plag"]},
  {id:"s7b",t:"All five cadences",l:"Including the deceptive, which resolves to the wrong chord on purpose.",w:"Five ways to end a phrase. The deceptive cadence resolves the dominant to vi instead of I: the chord you were promised, withheld.",d:"cad"},
  {id:"s7c",t:"The four common progressions",l:"Same four chords in different orders. Listen to where the minor chord falls.",w:"Where the minor chord falls in the loop changes the emotional weight completely, even though the harmony is identical.",d:"pr-maj",o:["1451", "1645", "1564", "6415"]},
+ {id:"s7c2",t:"Harmonic function",l:"A I chord sets the key, then one more. What is that second chord doing?",w:"Chords group by what they do, not by what they are. UnCAGED Part 2 divides a major key into three functions. Dominant chords, V and vii diminished, are tensions pulling back to the tonic. Pre-dominant chords, IV and ii, are the rising action that sets up a dominant. Tonic-expansion chords, vi and iii, barely move at all, because each shares two notes with the I chord and so colours the tonic rather than leaving it. Hearing function rather than chord names is what lets you predict where a piece is going, and it is the ear behind working out how one key moves to another.",d:"fn-maj"},
  {id:"s7d",t:"Minor progressions",l:"Including the flat-6 flat-7 loop most metal is built on.",w:"Natural minor has no leading tone, so these progressions circle rather than resolve, which is what makes them loop so comfortably under a riff.",d:"pr-min"},
  {id:"s7e",t:"Modal interchange",l:"A chord borrowed from the parallel minor. The flat 7 first, it is everywhere.",w:"Modal interchange borrows a chord from the parallel minor without leaving the major key. A minor iv in a major key is probably the saddest single substitution available to you.",d:"borrow",o:["b7", "b6", "iv"]},
  {id:"s7f",t:"All borrowed chords",l:"Including the Neapolitan, a major chord on the flat 2nd.",w:"The full set. The Neapolitan is built on the lowered 2nd and almost always heads for the dominant.",d:"borrow"},
  {id:"s7g",t:"Secondary dominants",l:"A dominant 7th aimed at a chord that is not the tonic.",w:"A key change lasting one chord. In C, V of V is D7, and it pulls to G exactly as G7 pulls to C. Ligon's outlines are built on this: the seventh of each chord falling to the third of the next.",d:"secd"},
- {id:"s7h",t:"Modulation",l:"Two keys, back to back. Name the distance between them.",w:"Modulation is a change of key centre. Name the distance: up a semitone, to the dominant, to the relative or parallel minor, or a chromatic mediant. This is the ear behind hearing how a song moves between keys, and the last skill you need before you can work out how a piece bridges one key to another.",d:"modul"}]},
+  {id:"s7i",t:"Blues forms",l:"Four twelve-bar variants. Listen to bars two, nine and ten.",w:"All four are twelve bars long, so the length tells you nothing. The quick change puts IV in bar two instead of staying on I. The jazz blues adds ii-V turnarounds and a vi chord. The minor blues approaches the V from the flat VI above it. Bars two, nine and ten are where they separate.",d:"blues"},
+{id:"s7h",t:"Modulation",l:"Two keys, back to back. Name the distance between them.",w:"Modulation is a change of key centre. Name the distance: up a semitone, to the dominant, to the relative or parallel minor, or a chromatic mediant. This is the ear behind hearing how a song moves between keys, and the last skill you need before you can work out how a piece bridges one key to another.",d:"modul"}]},
 {n:"Naming the notes",why:"Knowing what a sound is called, not only what it sounds like. Do these anywhere; no headphones needed.",steps:[
  {id:"s8a",t:"3rds above a note",l:"No listening required. Name the note a 3rd above the one given.",w:"This is spelling rather than hearing, and it is the other half of knowing an interval. A major 3rd above E flat is G; a minor 3rd above E flat is G flat. The sound plays after you answer so the name and the sound attach to each other.",d:"nm-3rd"},
  {id:"s8b",t:"Anchors above a note",l:"The 3rds you know plus the perfect intervals, from any starting note.",w:"The same five intervals you learned as anchors by ear, now as spellings. Being able to name a 5th above any note is what lets you work out a chord on the fretboard without counting frets one at a time.",d:"nm-anch"},
@@ -1262,7 +1356,24 @@ const STAGES=[{n:"Major and minor",why:"Everything else is measured against this
  {id:"s9a",t:"Four bars or eight",l:"Count the bars. The click marks every beat, with an accent on the downbeat.",w:"Baione's blues chapter sets this as a listening task in its own right: work out the form and arrangement by ear, including how long each section lasts. Start with the two commonest lengths. Count in bars, not beats, and let the accented downbeat do the counting for you.",d:"fm-bars",o:["b4", "b8"]},
  {id:"s9b",t:"All four section lengths",l:"Four, eight, twelve or sixteen bars.",w:"The harmony here is deliberately plain and switches between major and minor, because a length should not come with its own sound attached. In real music twelve bars usually means a blues, but if this exercise always played one you would learn to recognise the blues rather than to count. Sixteen is long enough that you have to count in groups of four.",d:"fm-bars"},
  {id:"s9c",t:"How long each chord lasts",l:"Same eight bars every time. Only the rate of change moves.",w:"The other half of Baione's question: for how many measures does each chord last. This is what separates a progression that moves from a riff that sits still, and it is usually the first thing you need when writing a song down.",d:"fm-len"},
- {id:"s9d",t:"Beats and tuning",l:"Two notes together. Listen for waves rather than pitch.",w:"When two pitches are nearly identical they interfere and produce audible beats, slow waves in the volume. Baione's tuning method is to ignore the pitch and listen for those waves: keep adjusting until they disappear. It is a more reliable way to tune than trying to hear the interval, and it is the same skill that tells you a guitar has drifted.",d:"fm-tune"}]}
+ {id:"s9d",t:"Beats and tuning",l:"Two notes together. Listen for waves rather than pitch.",w:"When two pitches are nearly identical they interfere and produce audible beats, slow waves in the volume. Baione's tuning method is to ignore the pitch and listen for those waves: keep adjusting until they disappear. It is a more reliable way to tune than trying to hear the interval, and it is the same skill that tells you a guitar has drifted.",d:"fm-tune"}]},
+{n:"Rhythm",why:"Time rather than pitch. Count first; the feel arrives later.",steps:[
+ {id:"s10a",t:"Quarters, eighths, sixteenths",l:"How many hits fit inside one beat. Count, do not feel, to begin with.",w:"Subdivision is how many even parts the beat is cut into. Baione makes this the foundation of the whole rhythmic side: understanding and feeling subdivisions is what lets you play every other kind of groove. Leavitt's instruction is the practical one - count the rhythm until you can feel the phrase, and eventually you recognise whole groups without counting at all.",d:"subdiv",o:["q", "e", "s16"]},
+ {id:"s10b",t:"Triplets against sixteenths",l:"Three per beat or four. Both sound busy; only one divides the beat evenly in two.",w:"This is the pair almost everyone confuses. A triplet cuts the beat into three, a sixteenth into four. The tell is that sixteenths subdivide again into pairs you can tap, while triplets never resolve into an even count. Getting this reliable is what makes swing legible later.",d:"subdiv",o:["t8", "s16"]},
+ {id:"s10c",t:"All eight subdivisions",l:"From quarter notes to thirty-seconds, including the awkward ones.",w:"Quintuplets and septuplets do not fit the pulse comfortably, which is exactly why they are worth hearing. At the top end, thirty-seconds stop being a rhythm you count and become a texture.",d:"subdiv"},
+ {id:"s10d",t:"Simple time",l:"Two, three or four beats to the bar. Count from the accent.",w:"In simple time the beat divides into two. Carter's ordering puts time signatures before subdivision complexity, and the top number of the signature is what you are counting here: how many beats pass before the accent comes round again.",d:"metre",o:["44", "34", "24"]},
+ {id:"s10e",t:"Compound time",l:"6/8, 9/8 and 12/8. The beat divides into three, not two.",w:"That is the whole difference: in compound time each beat splits in three, which is what produces the lilt. 12/8 is the metre behind most slow blues, and it is why a slow blues feels like it is rolling rather than marching.",d:"metre",o:["68", "98", "128"]},
+ {id:"s10f",t:"All eight metres",l:"Adding 5/4 and 7/8, where the bar does not divide evenly.",w:"Odd metres are grouped rather than counted flat: 7/8 is felt as 3+2+2 or 2+2+3, and which grouping it is changes the character completely. Progressive metal lives here.",d:"metre"},
+ {id:"s10g",t:"Straight or swung",l:"Are the two halves of the beat equal, or is the first one longer?",w:"Baione states it plainly: eighth notes in a shuffle are usually played as triplets even though they are written as straight eighths. Straight means the beat splits evenly in two; swung means it splits in three and you hear the first and third.",d:"feel",o:["str8", "sw8"]},
+ {id:"s10h",t:"All four feels",l:"Adding straight sixteenths and the gallop.",w:"The gallop is a dotted eighth followed by a sixteenth, so the second note arrives late and clipped. It is the rhythm most galloping metal riffs are built from, and it is not the same thing as a swing even though both are uneven.",d:"feel"},
+ {id:"s10i",t:"Tempo estimate",l:"Name the speed in beats per minute, to the nearest band.",w:"Useful anchors: 60 bpm is one beat per second, and 120 is the default on nearly every drum machine, so most people already know that speed without realising. Estimate against those two rather than trying to count.",d:"tempo"},
+ {id:"s10j",t:"Polyrhythm",l:"Two rhythms at once. Name the ratio.",w:"Three against two is the one to learn first because everything else is measured against it. In four against three neither side lines up until the end of the cycle, and by seven against four you stop hearing two rhythms and start hearing one uneven texture.",d:"poly"}]},
+{n:"An ear for sound",why:"Not what the notes are, but what has been done to them. The engineer's ear rather than the musician's.",steps:[
+ {id:"s11a",t:"Low, middle, high",l:"One band is boosted. Say roughly where.",w:"Frequency recognition is a trainable skill and the fastest way in is three widely spaced anchors. 125 Hz is weight, 1 kHz is the centre of hearing, 8 kHz is air and sibilance. Everything else gets placed relative to these.",d:"eq-band",o:["125", "1k", "8k"]},
+ {id:"s11b",t:"Five bands",l:"Adding the sub and the top octave.",w:"63 Hz is felt more than heard, and 16 kHz is barely a pitch at all. Adding the extremes teaches you the edges of the range before you try to divide the middle of it.",d:"eq-band",o:["63", "250", "1k", "4k", "16k"]},
+ {id:"s11c",t:"All nine bands",l:"Octave by octave from 63 Hz to 16 kHz.",w:"Two regions matter most in practice. 250 Hz is the muddy band, and cutting it is the commonest fix for a cluttered mix. 4 kHz is where the ear is most sensitive, so tiny changes there are very audible.",d:"eq-band"},
+ {id:"s11d",t:"Filter type",l:"Bell, shelf or pass filter. Same frequency, different shape.",w:"A bell affects one band and tapers either side. A shelf lifts everything above or below the frequency. A pass filter removes everything on one side entirely. Recognising the shape matters more than recognising the frequency, because it tells you what the engineer was trying to do.",d:"eq-type"},
+ {id:"s11e",t:"Q width",l:"How wide the affected band is.",w:"A narrow Q is surgical: it removes one problem and leaves everything else alone. A wide Q sounds like tone rather than like an effect. The same boost at the same frequency is a different tool depending on this alone.",d:"eq-q"}]}
 ];
 const ALLSTEPS=[];STAGES.forEach((st,si)=>st.steps.forEach(s=>{s.stage=si;ALLSTEPS.push(s);}));
 
@@ -1308,6 +1419,80 @@ function excerpt(t){if(!t)return"";
  let out=parts[0].trim(), i=1;
  while(out.length<60&&i<parts.length){out+=" "+parts[i].trim();i++;}
  return out;}
+const LOGNOTES={"0.0": "Start at two notes and add one only when the shorter length is boringly easy. Length is the variable that makes dictation hard, far more than the notes themselves.", "0.1": "Stepwise motion first, then leaps, then chromatics. A line that only steps can be worked out by ear alone; a line that leaps needs you to recognise intervals.", "0.2": "The same melodic skill in different harmonic surroundings. A phrase in a modal context is harder because the tonic is less obvious.", "0.3": "The number of replays is the difficulty dial. Unlimited replays is study; a single hearing is the real test, and worth attempting long before you can do it.", "0.4": "Short-term pitch memory, tested by delay. If you can still sing a phrase back thirty seconds later you are holding it as music rather than as a fading impression.", "1.0": "Real transcription, away from this app. Use software that slows audio without changing pitch. Bass lines first: fewer notes, lower register, easier to isolate.", "1.1": "Following individual voices rather than whole chords. Ligon's rule gives you the shortcut - sevenths tend to fall to thirds - so if you can find the 7th you can often predict the next note.", "2.0": "Writing rhythm down. Tap the pulse with one hand and the rhythm with the other before attempting to notate anything.", "2.1": "Patterns specific to metal, where the kick drum carries most of the rhythmic information. Count the subdivision rather than the pattern.", "2.2": "The hardest rhythmic material. Metric modulation in particular needs the pulse held externally, so use a metronome you can ignore.", "3.0": "Compression is easiest to hear on the way out rather than the way in: listen for the sound swelling back up between hits rather than for the reduction itself.", "3.1": "Reverb and delay. Judge the tail after the sound stops, not the sound itself. Pre-delay is the gap before the tail begins.", "3.2": "All three modulation effects sweep a filter or a delay. Chorus is thickest, flanger has a jet-like sweep, phaser is subtler and more hollow.", "3.3": "Gain staging by ear. Overdrive keeps the note's attack, fuzz destroys it. The amount of gain is easier to judge on single notes than on chords.", "3.4": "Stereo width and placement. Check in mono occasionally: anything that disappears has a phase problem.", "3.5": "Identifying instruments and sources. Start with families, then specific instruments, then the settings used on them.", "3.6": "EQ applied to real material rather than noise. Much harder than the drill in Chapter 11, because the source already has a spectrum of its own.", "4.0": "Matching a pitch with your voice. This is the foundation of every other singing skill, and it needs a real instrument or tuner to check against.", "4.1": "Producing intervals rather than recognising them. Singing an interval proves you have internalised it; recognising one only proves you can compare.", "4.2": "Singing scale degrees on cue against a held tonic. The vocal counterpart of Chapter 5.", "4.3": "Arpeggios by voice. Guide tones - the 3rd and 7th - are the ones worth singing over a ii-V-I, because they are what actually moves.", "4.4": "Singing scales from a given tonic. Slowly, and check against an instrument, or you will drift and reinforce the drift.", "4.5": "Reading and singing at once. The hardest combination in this list, and the one music schools spend years on.", "4.6": "Holding your own line against something else. Start with a drone, end with harmonising against a recording.", "4.7": "Applying Complete Vocal Technique modes while keeping pitch accurate. Effort tends to pull pitch sharp, so check rather than assume.", "5.0": "Fine pitch discrimination. Chapter 9 drills the beat-rate method; these are the finer distinctions that method eventually makes audible."};
+const GLOSSARY=[
+["Harmonic function","What a chord does in a key rather than what it is. UnCAGED Part 2 groups a major key into three: dominant chords pull to the tonic, pre-dominant chords set up a dominant, and tonic-expansion chords colour the tonic without leaving it."],
+["Pre-dominant","A chord that typically comes before the dominant. IV and ii. Sometimes called subdominant function."],
+["Tonic expansion","vi and iii. They share two notes with the I chord, so moving to them does not feel like going anywhere - they colour the tonic instead."],
+["Chord scale","Playing every triad of a scale in order, all in the same inversion. A way of surveying which chords a key contains."],
+["Semitone","The smallest step in Western music: two adjacent keys on a piano, or one fret on a guitar. Also called a half step. Every interval is counted in these."],
+["Whole tone","Two semitones. Also called a whole step. The gap between the first two notes of a major scale."],
+["Interval","The distance between two notes. Named by two things at once: a number, from the letter names it spans, and a quality - major, minor, perfect, diminished or augmented."],
+["Melodic interval","Two notes played one after the other. You can measure the distance because you hear them separately."],
+["Harmonic interval","Two notes played at the same time. You cannot measure the gap, so you judge the quality of the blend instead."],
+["Compound interval","An interval wider than an octave. A 9th is a 2nd plus an octave, an 11th is a 4th, a 13th is a 6th. Chord extensions are named this way."],
+["Inversion (interval)","Turning an interval upside down by moving the lower note up an octave, so it becomes the higher note. Murray Brown gives the rule in two halves. The number: a 2nd becomes a 7th, a 3rd becomes a 6th, a 4th becomes a 5th, and vice versa - the two always add up to nine. The quality: major becomes minor, minor becomes major, perfect stays perfect, diminished becomes augmented. So a minor 3rd inverted is a major 6th. C up to E flat is a minor 3rd; move the C up an octave and E flat up to C is a major 6th. Same two notes, different distance."],
+["Inversion (chord)","Which note of a chord is in the bass. Root position has the root at the bottom, 1st inversion the 3rd, 2nd inversion the 5th, 3rd inversion the 7th. Berklee's rule is that only the lowest note decides this, however the notes above it are arranged."],
+["Perfect","The quality of the unison, 4th, 5th and octave. They have the simplest frequency ratios and blend rather than colour. Inverted, a perfect interval stays perfect."],
+["Major and minor (interval)","The two qualities available to 2nds, 3rds, 6ths and 7ths. Minor is always one semitone smaller than major."],
+["Diminished","One semitone smaller than perfect or minor. A diminished 5th is a semitone below a perfect 5th."],
+["Augmented","One semitone larger than perfect or major. Murray Brown notes augmented intervals are avoided within a single voice because they are hard to sing in tune, while diminished ones are fine provided the line steps back inside the leap."],
+["Enharmonic","Two names for the same sound. F sharp and G flat are enharmonic. Berklee uses this to avoid double flats when spelling diminished 7 chords."],
+["Tritone","Three whole tones, six semitones, exactly half an octave. The only interval that inverts into itself."],
+["Consonance and dissonance","Ligon defines these as stability and instability inside the harmony rather than pleasant and unpleasant. A dissonance is a note that wants to move somewhere."],
+["Chord","Three or more notes sounded together. Berklee's definition; if they are played one after another instead it is an arpeggio."],
+["Arpeggio","The notes of a chord played one at a time rather than together."],
+["Triad","A three-note chord built in 3rds: root, 3rd and 5th."],
+["Root","The note a chord is named after and built from. Not necessarily the lowest note being played - see inversion."],
+["Third, fifth, seventh","The other members of a chord, named by their interval above the root. The 3rd decides major or minor, the 5th decides diminished or augmented, the 7th decides how badly the chord wants to move."],
+["Seventh chord","A four-note chord: a triad with a 7th added on top."],
+["Suspended","A chord with the 3rd replaced by the 2nd or the 4th, so it is neither major nor minor."],
+["Close and open position","Close position keeps all the chord members inside one octave. Open position spreads them over more than one. Berklee treats this as separate from inversion - spacing does not change which note is in the bass."],
+["Voicing","How a chord's notes are arranged and spaced, as opposed to which notes it contains."],
+["Slash chord","A chord with a specified bass note, written C/E. Usually just an inversion by another name."],
+["Scale degree","A note's position in a scale, counted from the tonic: 1 to 7. Hearing a note as a degree rather than as an interval from the previous note is a separate skill, and the more useful one."],
+["Tonic","The note a key is built on and returns to. Degree 1. The note that feels like home."],
+["Leading tone","Degree 7 when it sits a semitone below the tonic. Murray Brown notes the raised 7th in harmonic minor exists precisely to create one."],
+["Dominant","Degree 5 of a scale, or the chord built on it. The strongest pull back to the tonic."],
+["Subdominant","Degree 4, or the chord built on it. IV to I is the plagal cadence."],
+["Diatonic","Belonging to the key, using only its seven notes. A chromatic note is one from outside it."],
+["Mode","A scale made by starting a parent scale from a different degree. The same seven notes with a different note treated as home."],
+["Parent scale","The scale a mode is drawn from. D Dorian's parent scale is C major - same notes, different tonic."],
+["Relative minor","The minor key sharing a key signature with a major key, starting on its 6th degree. A minor is the relative minor of C major."],
+["Parallel minor","The minor key with the same tonic. C minor is the parallel minor of C major."],
+["Pentatonic","A five-note scale. Carter's explanation is that two notes are omitted specifically to remove the semitone clashes, so nothing left can grate."],
+["Roman numerals","A way of naming chords by their scale degree rather than their letter, so a progression can be described in any key. Upper case is major, lower case minor."],
+["Cadence","How a phrase ends. Murray Brown names four principal types: perfect, plagal, imperfect and interrupted."],
+["Progression","A sequence of chords."],
+["Root motion","How far the bass moves between two chords, ignoring their quality. Down a 5th is the strongest."],
+["Voice leading","How each individual note moves from one chord to the next. Berklee's goal is for each voice to move as little as possible; Ligon adds the specific rule that sevenths fall to thirds."],
+["Common tone","A note shared by two consecutive chords. Keeping it in the same voice is the first principle of voice leading."],
+["Modal interchange","Borrowing a chord from the parallel minor without leaving the major key. Also called a borrowed chord."],
+["Secondary dominant","A dominant 7th aimed at a chord other than the tonic. Ligon's word for what it does is tonicize: it makes the target briefly feel like home."],
+["Tonicize","To make a chord temporarily sound like the tonic by approaching it with its own dominant, without properly changing key."],
+["Modulation","An actual change of key centre, as opposed to a passing tonicization."],
+["Tritone substitution","Replacing a dominant 7th with the one a tritone away. Both contain the same tritone, so only the bass really changes."],
+["Bar","A group of beats marked off by the time signature. Also called a measure."],
+["Downbeat","The first beat of a bar, and usually the accented one."],
+["Form","The shape of a whole piece: how long each section lasts, where they repeat, whether there is an intro or an ending. Baione sets working this out by ear as an exercise in its own right."],
+["Beats (tuning)","Slow waves in the volume you hear when two nearly identical pitches interfere. Baione's tuning method is to ignore the pitch and adjust until the waves disappear."],
+["Cents","A hundredth of a semitone. Used to describe how far out of tune something is."],
+["First-time accuracy","What this app scores you on: the fraction you got right on the first press. Getting it on the second attempt still counts toward finishing the session, but it is recorded as wrong."],
+["Coverage","Shown as 2/12 on a step. It means two of that step's twelve sounds have been tested. A step cannot pass until every sound has been heard at least five times on its own."]
+];
+
+function glossaryHTML(){
+ let h='<div class="page"><button class="x standalone" data-go="path">back</button>'+
+  '<div class="eyebrow">Glossary</div><h1 class="title">The words,<br>plainly</h1>'+
+  '<p class="sub">Every term the app uses. Type to filter.</p>'+
+  '<input id="gfilter" class="gsearch" placeholder="Search a term..." autocomplete="off">'+
+  '<div id="glist">';
+ GLOSSARY.forEach(function(e){
+  h+='<div class="gentry" data-t="'+esc((e[0]+" "+e[1]).toLowerCase())+'">'+
+   '<div class="gterm">'+esc(e[0])+'</div>'+
+   '<p class="gdef">'+esc(e[1])+'</p></div>';});
+ return h+'</div></div>';}
+
 function pathHTML(){
  const cur=currentStep();
  const done=ALLSTEPS.filter(stepDone).length;
@@ -1351,10 +1536,11 @@ function pathHTML(){
 
  h+='<div class="foot"><button class="ghost" data-go="home">All exercises</button>'+
   '<button class="ghost" data-go="learn">Reference</button></div>'+
-  '<div class="foot"><button class="ghost" data-go="progress">Where I stand</button>'+
-  '<button class="ghost" data-go="log">Log by hand</button></div>'+
-  '<div class="foot"><button class="ghost" data-dim="1">'+(V.dim?"Brighten":"Dim further")+'</button>'+
-  '<button class="ghost" data-export="1">Backup and restore</button></div>';
+  '<div class="foot"><button class="ghost" data-go="glossary">Glossary</button>'+
+  '<button class="ghost" data-go="progress">Where I stand</button></div>'+
+  '<div class="foot"><button class="ghost" data-go="log">Log by hand</button>'+
+  '<button class="ghost" data-dim="1">'+(V.dim?"Brighten":"Dim further")+'</button></div>'+
+  '<div class="foot"><button class="ghost" data-export="1">Backup and restore</button></div>';
  return h+'</div>';}
 
 /* A/B roots: hold one root while you compare, then move on. */
@@ -1368,6 +1554,10 @@ function descPrefix(d){const k=d.kind;
  if(k==="interval"||k==="compound"||k==="degree")return "iv";
  if(k==="chord"||k==="arp"||k==="inv"||k==="voicing")return "ch";
  if(k==="scale")return "sc";
+ /* rhythm and sound decks key on their own kind: 5/4 and 5-over-2 would
+    otherwise collide on the same short key. */
+ if(["subdiv","metre","feel","poly","tempo","eqband","eqtype","eqq",
+     "bars","chordlen","tune","spell","spellch"].indexOf(k)>-1)return k;
  return "pr";}
 function stepHTML(){
  const step=ALLSTEPS.filter(s=>s.id===V.stepId)[0];
@@ -1376,6 +1566,7 @@ function stepHTML(){
   '<div class="eyebrow">'+esc(STAGES[step.stage].n)+'</div>'+
   '<h1 class="title">'+esc(step.t)+'</h1>'+
   '<p class="sub theorytop">'+esc(step.w||step.l)+'</p>'+
+  '<button class="glosslink" data-go="glossary">Not sure of a word? Glossary</button>'+
   '<div class="actions"><button class="primary" data-drill="'+step.id+'">Drill it</button>'+
   '<button class="ghost half" data-study="'+step.id+'">Study mode</button></div>';
 
@@ -1566,7 +1757,7 @@ function render(){document.body.classList.toggle("dim",V.dim);
  const y=same?(window.scrollY||window.pageYOffset||0):0;
  el().innerHTML={home:homeHTML,drill:drillHTML,done:doneHTML,
   progress:progressHTML,log:logHTML,learn:learnHTML,learnItem:learnItemHTML,
-  path:pathHTML,step:stepHTML,backup:backupHTML}[V.view]();
+  path:pathHTML,step:stepHTML,backup:backupHTML,glossary:glossaryHTML}[V.view]();
  lastPage=key;
  window.scrollTo(0,y);}
 
@@ -1597,8 +1788,10 @@ function homeHTML(){
     '</button><button class="row-study" data-study="'+x.d.id+'">study</button></div>';});
   h+='</section>';});
  h+='<button class="learnbtn" data-go="learn">Reference &mdash; hear how any sound is built</button>'+
-  '<div class="foot"><button class="ghost" data-go="progress">Where I stand</button>'+
-  '<button class="ghost" data-go="log">Log by hand</button></div>'+
+  '<div class="foot"><button class="ghost" data-go="glossary">Glossary</button>'+
+  '<button class="ghost" data-go="progress">Where I stand</button></div>'+
+  '<div class="foot"><button class="ghost" data-go="log">Log by hand</button>'+
+  '<button class="ghost" data-dim="1">'+(V.dim?"Brighten":"Dim further")+'</button></div>'+
   '<div class="foot"><button class="ghost" data-dim="1">'+(V.dim?"Brighten":"Dim further")+'</button>'+
   '<button class="ghost" data-export="1">Backup and restore</button></div>'+
   '<div class="foot"><button class="ghost" data-viz="1">Keyboard in practice: '+
@@ -1671,12 +1864,15 @@ function progressHTML(){const rows=[];
 function logHTML(){
  let h='<div class="page"><button class="x standalone" data-go="home">back</button>'+
   '<div class="eyebrow">Log by hand</div><h1 class="title">What it can\'t<br>play for you</h1>'+
-  '<p class="sub">Needs an instrument, a microphone, or real recorded audio. Tap a rating to cycle it.</p>';
+  '<p class="sub">Needs an instrument, a microphone, or real recorded audio, so the app cannot test it. Tap a rating to cycle it.</p>'+
+  '<p class="note">The guidance below is mine rather than the books\u2019. None of your sources cover dictation, mixing or singing, so unlike the rest of the app there is nothing here I can point at.</p>';
  LOG.forEach((mod,mi)=>{const open=V.openMod===mi;
   h+='<button class="modhead'+(open?" open":"")+'" data-mod="'+mi+'">'+esc(mod[0])+
    '<span>'+(open?"&minus;":"+")+'</span></button>';
   if(!open)return;
   mod[1].forEach((grp,gi)=>{h+='<h2 class="group-title">'+esc(grp[0])+'</h2>';
+   const gn=LOGNOTES[mi+"."+gi];
+   if(gn)h+='<p class="lognote">'+esc(gn)+'</p>';
    grp[1].split("|").forEach((item,ii)=>{const id="m"+mi+"."+gi+"."+ii,r=S.manual[id]||0;
     h+='<div class="logrow"><span class="logname">'+esc(item)+'</span>'+
      '<button class="chip r'+r+'" data-rate="'+id+'">'+WORDS[r]+'</button></div>';});});});
@@ -1685,6 +1881,11 @@ function logHTML(){
 const MANUAL_COUNT=LOG.reduce((n,m)=>n+m[1].reduce((k,g)=>k+g[1].split("|").length,0),0);
 
 /* =============================== EVENTS ================================= */
+document.addEventListener("input",function(e){
+ if(e.target&&e.target.id==="gfilter"){
+  const q=e.target.value.trim().toLowerCase();
+  document.querySelectorAll(".gentry").forEach(function(n){
+   n.style.display=(!q||n.dataset.t.indexOf(q)>-1)?"":"none";});}});
 document.addEventListener("change",e=>{if(e.target.id==="imp")importProgress(e);});
 document.addEventListener("click",e=>{const t=e.target.closest("button");if(!t)return;
  if(t.dataset.start&&DECKS.filter(x=>x.id===t.dataset.start).length){
