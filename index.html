@@ -480,6 +480,11 @@ const LOG = [
 
 
 
+
+const CLOSE=[
+ {k:"ii",n:"ii",t:2,q:"min"},{k:"iii",n:"iii",t:4,q:"min"},
+ {k:"IV",n:"IV",t:5,q:"maj"},{k:"V",n:"V",t:7,q:"maj"},
+ {k:"vi",n:"vi",t:9,q:"min"}];
 const PULL=[
  {k:"rest",n:"Settled",ch:[[9,"min"],[4,"min"],[0,"maj"]]},
  {k:"pull",n:"Wants to move",ch:[[7,"maj"],[11,"dim"]]}];
@@ -576,6 +581,7 @@ const DECKS=[
 {id:"nm-dn",g:"Naming",name:"Any interval below a note",tier:4,kind:"spell",dir:"down",set:IV,opts:NOTES,cols:3},
 {id:"nm-ch",g:"Naming",name:"Chord tones",tier:3,kind:"spellch",opts:NOTES,cols:3},
 
+{id:"close",g:"Harmony",name:"Closely related keys",tier:4,kind:"closekey",opts:CLOSE,cols:2},
 {id:"fn-pull",g:"Harmony",name:"Settled or unsettled",tier:1,kind:"function",opts:PULL,cols:1},
 {id:"fn-maj",g:"Harmony",name:"Harmonic function",tier:3,kind:"function",opts:FUNC,cols:1},
 {id:"fm-bars",g:"Form",name:"Section length",tier:2,kind:"bars",opts:BARS,cols:2},
@@ -639,6 +645,16 @@ function buildQuestion(deck,force,fixedRoot){
 
 
 
+
+ if(K==="closekey"){
+  const o=pick(deck.opts,force), r=fixedRoot==null?rint(52,62):57;
+  let t=voice(r,0,"maj",0,0.95,0.12);
+  t=t.concat(voice(r,(o.t+2)%12,"min7",1.05,0.85,0.12));
+  t=t.concat(voice(r,(o.t+7)%12,"dom7",1.95,0.85,0.12));
+  t=t.concat(voice(r,o.t,o.q,2.85,1.9,0.13));
+  return{answer:o.k,plan:{tones:t},label:o.n,
+   vizBar:0.9,vizTimes:[0,1.05,1.95,2.85]};
+ }
  if(K==="function"){
   const o=pick(deck.opts,force), r=fixedRoot==null?rint(52,64):57;
   const c=fixedRoot==null?rnd(o.ch):o.ch[0];
@@ -942,6 +958,11 @@ function roman(q,i,acc){
 
 /* --------------------------- written character --------------------------- */
 const DESC={
+"pr:ii":"The supertonic minor. From C you land on D minor. One of the five keys Ligon lists as closely related, all reachable with a single ii-V.",
+"pr:iii":"The mediant minor. From C you land on E minor. Shares all but one note with home.",
+"pr:IV":"The subdominant. From C you land on F major, one flat away. Ligon notes most modulations move no further than one accidental up or down.",
+"pr:V":"The dominant. From C you land on G major, one sharp away. The commonest modulation in tonal music.",
+"pr:vi":"The relative minor. From C you land on A minor - identical key signature, new tonic, so nothing changes except which note feels like home.",
 "pr:rest":"Settled. The chord sits where it is. Either the tonic itself, or one of the chords that shares two notes with it and so colours home rather than leaving it.",
 "pr:pull":"Wants to move. The chord strains back toward the tonic. You do not need to know its name to hear this - the pull is a separate thing from the chord's quality.",
 "pr:ton":"Tonic function. The chords that feel like home or an extension of it: I, and also vi and iii. UnCAGED Part 2 calls vi and iii tonic expansion chords, because each shares two notes with the I chord, so moving there does not feel like going anywhere.",
@@ -1365,7 +1386,8 @@ const STAGES=[{n:"Major and minor",why:"Everything else is measured against this
  {id:"s7f",t:"All borrowed chords",l:"Including the Neapolitan, a major chord on the flat 2nd.",w:"The full set. The Neapolitan is built on the lowered 2nd and almost always heads for the dominant.",d:"borrow"},
  {id:"s7g",t:"Secondary dominants",l:"A dominant 7th aimed at a chord that is not the tonic.",w:"A key change lasting one chord. In C, V of V is D7, and it pulls to G exactly as G7 pulls to C. Ligon's outlines are built on this: the seventh of each chord falling to the third of the next.",d:"secd"},
   {id:"s7i",t:"Blues forms",l:"Four twelve-bar variants. Listen to bars two, nine and ten.",w:"All four are twelve bars long, so the length tells you nothing. The quick change puts IV in bar two instead of staying on I. The jazz blues adds ii-V turnarounds and a vi chord. The minor blues approaches the V from the flat VI above it. Bars two, nine and ten are where they separate.",d:"blues"},
-{id:"s7h",t:"Modulation",l:"Two keys, back to back. Name the distance between them.",w:"Modulation is a change of key centre. Name the distance: up a semitone, to the dominant, to the relative or parallel minor, or a chromatic mediant. This is the ear behind hearing how a song moves between keys, and the last skill you need before you can work out how a piece bridges one key to another.",d:"modul"}]},
+{id:"s7h",t:"Modulation",l:"Two keys, back to back. Name the distance between them.",w:"Modulation is a change of key centre. Name the distance: up a semitone, to the dominant, to the relative or parallel minor, or a chromatic mediant. This is the ear behind hearing how a song moves between keys, and the last skill you need before you can work out how a piece bridges one key to another.",d:"modul"},
+ {id:"s7j",t:"Closely related keys",l:"Home, then a ii-V, then the new key. Which degree did you land on?",w:"This is Ligon\u2019s own ear training exercise, and it is the mechanism behind a key change rather than just its distance. He lists five closely related keys - from C major they are D minor, E minor, F major, G major and A minor - and gets to each one using the ii-V of the target. His instruction is to sing them: give yourself a starting pitch, sing through the modulation, then check yourself. Once these are reliable he moves to remote keys. This is the last thing you need in order to hear how a piece bridges one key to another.",d:"close"}]},
 {n:"Naming the notes",why:"Knowing what a sound is called, not only what it sounds like. Do these anywhere; no headphones needed.",steps:[
  {id:"s8a",t:"3rds above a note",l:"No listening required. Name the note a 3rd above the one given.",w:"This is spelling rather than hearing, and it is the other half of knowing an interval. A major 3rd above E flat is G; a minor 3rd above E flat is G flat. The sound plays after you answer so the name and the sound attach to each other.",d:"nm-3rd"},
  {id:"s8b",t:"Anchors above a note",l:"The 3rds you know plus the perfect intervals, from any starting note.",w:"The same five intervals you learned as anchors by ear, now as spellings. Being able to name a 5th above any note is what lets you work out a chord on the fretboard without counting frets one at a time.",d:"nm-anch"},
@@ -1441,6 +1463,8 @@ function excerpt(t){if(!t)return"";
  return out;}
 const LOGNOTES={"0.0": "Start at two notes and add one only when the shorter length is boringly easy. Length is the variable that makes dictation hard, far more than the notes themselves.", "0.1": "Stepwise motion first, then leaps, then chromatics. A line that only steps can be worked out by ear alone; a line that leaps needs you to recognise intervals.", "0.2": "The same melodic skill in different harmonic surroundings. A phrase in a modal context is harder because the tonic is less obvious.", "0.3": "The number of replays is the difficulty dial. Unlimited replays is study; a single hearing is the real test, and worth attempting long before you can do it.", "0.4": "Short-term pitch memory, tested by delay. If you can still sing a phrase back thirty seconds later you are holding it as music rather than as a fading impression.", "1.0": "Real transcription, away from this app. Use software that slows audio without changing pitch. Bass lines first: fewer notes, lower register, easier to isolate.", "1.1": "Following individual voices rather than whole chords. Ligon's rule gives you the shortcut - sevenths tend to fall to thirds - so if you can find the 7th you can often predict the next note.", "2.0": "Writing rhythm down. Tap the pulse with one hand and the rhythm with the other before attempting to notate anything.", "2.1": "Patterns specific to metal, where the kick drum carries most of the rhythmic information. Count the subdivision rather than the pattern.", "2.2": "The hardest rhythmic material. Metric modulation in particular needs the pulse held externally, so use a metronome you can ignore.", "3.0": "Compression is easiest to hear on the way out rather than the way in: listen for the sound swelling back up between hits rather than for the reduction itself.", "3.1": "Reverb and delay. Judge the tail after the sound stops, not the sound itself. Pre-delay is the gap before the tail begins.", "3.2": "All three modulation effects sweep a filter or a delay. Chorus is thickest, flanger has a jet-like sweep, phaser is subtler and more hollow.", "3.3": "Gain staging by ear. Overdrive keeps the note's attack, fuzz destroys it. The amount of gain is easier to judge on single notes than on chords.", "3.4": "Stereo width and placement. Check in mono occasionally: anything that disappears has a phase problem.", "3.5": "Identifying instruments and sources. Start with families, then specific instruments, then the settings used on them.", "3.6": "EQ applied to real material rather than noise. Much harder than the drill in Chapter 11, because the source already has a spectrum of its own.", "4.0": "Matching a pitch with your voice. This is the foundation of every other singing skill, and it needs a real instrument or tuner to check against.", "4.1": "Producing intervals rather than recognising them. Singing an interval proves you have internalised it; recognising one only proves you can compare.", "4.2": "Singing scale degrees on cue against a held tonic. The vocal counterpart of Chapter 5.", "4.3": "Arpeggios by voice. Guide tones - the 3rd and 7th - are the ones worth singing over a ii-V-I, because they are what actually moves.", "4.4": "Singing scales from a given tonic. Slowly, and check against an instrument, or you will drift and reinforce the drift.", "4.5": "Reading and singing at once. The hardest combination in this list, and the one music schools spend years on.", "4.6": "Holding your own line against something else. Start with a drone, end with harmonising against a recording.", "4.7": "Applying Complete Vocal Technique modes while keeping pitch accurate. Effort tends to pull pitch sharp, so check rather than assume.", "5.0": "Fine pitch discrimination. Chapter 9 drills the beat-rate method; these are the finer distinctions that method eventually makes audible."};
 const GLOSSARY=[
+["Closely related keys","The five keys reachable without leaving home by much: from C major they are D minor, E minor, F major, G major and A minor. Ligon reaches each one using the ii-V of the target key, and notes that most modulations in tonal music move no further than one accidental."],
+["Pivot","A chord shared by two keys, used to swing from one to the other without an abrupt jump."],
 ["Harmonic function","What a chord does in a key rather than what it is. UnCAGED Part 2 groups a major key into three: dominant chords pull to the tonic, pre-dominant chords set up a dominant, and tonic-expansion chords colour the tonic without leaving it."],
 ["Pre-dominant","A chord that typically comes before the dominant. IV and ii. Sometimes called subdominant function."],
 ["Tonic expansion","vi and iii. They share two notes with the I chord, so moving to them does not feel like going anywhere - they colour the tonic instead."],
